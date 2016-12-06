@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+
+    <New id="DSTest" class="org.eclipse.jetty.plus.jndi.Resource">
+        <Arg></Arg>
+        <Arg>jdbc/DSTest</Arg>
+        <Arg>
+            <New class="com.zaxxer.hikari.HikariDataSource">
+                <Arg>
+                    <New class="com.zaxxer.hikari.HikariConfig">
+                        <Set name="dataSourceClassName">org.h2.jdbcx.JdbcDataSource</Set>
+                        <Call name="addDataSourceProperty">
+                            <Arg>url</Arg>
+                            <Arg>jdbc:h2:tcp://localhost/~/test2</Arg>
+                            <!-- <Arg>jdbc:h2:~/test2</Arg> -->
+                        </Call>
+                        <Call name="addDataSourceProperty">
+                            <Arg>user</Arg>
+                            <Arg>sa</Arg>
+                        </Call>
+                        <Call name="addDataSourceProperty">
+                            <Arg>password</Arg>
+                            <Arg>sa</Arg>
+                        </Call>
+                    </New>
+                </Arg>
+            </New>
+        </Arg>
+    </New>
+</Configure>

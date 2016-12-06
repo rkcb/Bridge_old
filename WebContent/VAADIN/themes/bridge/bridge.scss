@@ -1,0 +1,175 @@
+// Global variable overrides. Must be declared before importing Valo.
+
+// Defines the plaintext font size, weight and family. Font size affects general component sizing.
+//$v-font-size: 16px;
+//$v-font-weight: 300;
+//$v-font-family: "Open Sans", sans-serif;
+
+// Defines the border used by all components.
+//$v-border: 1px solid (v-shade 0.7);
+//$v-border-radius: 4px;
+
+// Affects the color of some component elements, e.g Button, Panel title, etc
+//$v-background-color: hsl(210, 0%, 98%);
+// Affects the color of content areas, e.g  Panel and Window content, TextField input etc
+//$v-app-background-color: $v-background-color;
+
+// Affects the visual appearance of all components
+//$v-gradient: v-linear 8%;
+//$v-bevel-depth: 30%;
+//$v-shadow-opacity: 5%;
+
+// Defines colors for indicating status (focus, success, failure)
+//$v-focus-color: valo-focus-color(); // Calculates a suitable color automatically
+//$v-friendly-color: #2c9720;
+//$v-error-indicator-color: #ed473b;
+
+// For more information, see: https://vaadin.com/book/-/page/themes.valo.html
+// Example variants can be copy/pasted from https://vaadin.com/wiki/-/wiki/Main/Valo+Examples
+
+// calendar "circle" colors as style names "color1", "color2", ...
+$v-calendar-event-colors: #EE399F, #2d9f19, #004200, #ce3812, #2d55cd !default;
+
+@import "../valo/valo.scss";
+
+@mixin bridge {
+  @include valo;
+
+
+  .selected {
+    padding: 5px;
+  }
+  
+  .selectedLabel{
+    margin-right: 5px;
+  }
+  
+ 
+  // ----- "white" big calendars -----
+  .whiteCalendar {
+  	background-color: white;
+  	padding:10px;
+   	border-radius:5px;
+   	border: 1px solid lightgray;
+ }
+ 
+ .calendarColorPanel{
+    padding:10px;
+   	margin:20px;
+ }
+ 
+  .calendarClubName {
+     background-color: white;
+     color: black;
+     border-style: solid;
+     border-color: lightgrey;
+     border-width: 1px;
+     border-radius: 5px;
+     padding: 5px;
+  }
+ 
+  //----------------------------------
+  .pbntable .v-table-cell-content {
+    padding-top: 3px;
+    padding-bottom: 3px;
+  	height: 11px;
+  }
+  
+  // ----- deal corner ------
+  .suit {
+		margin: 0px;
+		padding : 0px;
+	}
+	
+	.suit p {
+		margin: 0px;
+		font-family: Mono, Courier;
+		font:  bold;
+		font-size: 140%;
+	}
+	
+	.dealNumber {
+		margin-top: 35px;
+		margin-right: 40px;
+	}
+	 
+   // ----- Score table cells ------
+   .v-table-cell-content-cellRed {
+   		background: red;
+   		font-weight: bold;
+   		color: white;
+   }
+   
+   .v-table-cell-content-cellYellow {
+   		background: yellow;
+   		//font-weight: bold;
+   		color: black;
+   }
+   
+   .v-table-cell-content-cellLightgreen {
+   		background: #7CFC00;
+   		//font-weight: bold;
+   		color: black;
+   }
+   
+   .v-table-cell-content-cellGreen {
+   		background: #228B22;
+   		font-weight: bold;
+   		color: white;
+   }
+   
+   .v-table-cell-content-white {
+   		background: white;
+   		font-weight: bold;
+   		color: black;
+   }
+   
+   // ------ deal corner ends ----------
+   
+   .markdowneditorarea { 
+   		font-family: "Lucida Console", Monaco, monospace;
+   }
+   
+   .v-panel-content-markdownpreview  {
+   		margin: 20px;
+   		padding: 20px;
+   		width: 400px;
+   }
+   // ------ news item -------
+   
+   .v-csslayout-newsitem {
+  	  background-color: white;
+  	  border-style: solid;
+  	  border-color: lightgray;
+  	  border-width: 1px;
+  	  padding: 0px 20px 0px 20px;
+  	  border-radius: 5px;
+  	  width: 700px;
+   }
+   
+    .v-csslayout-newsitem h1 {
+    	margin-top: 3px 
+    }
+   
+   
+   // ----- newsitem image ------
+   .newsimage {
+   	   margin: 0px;
+   }
+   
+   .previewl {
+      border-width: 1px;
+      border-style: solid;
+      border-color: lightgray;
+      border-radius: 3px;
+   }
+  
+   // this is necessary in order RichTextArea's scrollbar appear
+   .v-richtextarea-readonly {
+  	overflow: auto;
+   } 
+   
+   
+   
+   
+}

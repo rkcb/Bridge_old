@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+<persistence-unit name="BridgeResults" transaction-type="RESOURCE_LOCAL">
+              <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <non-jta-data-source>java:comp/env/jdbc/DSTest</non-jta-data-source>
+    <class>com.bridge.database.BasePart</class>
+    <class>com.bridge.database.BridgeEvent</class>
+    <class>com.bridge.database.Club</class>
+    <class>com.bridge.database.CompositeCompetion</class>
+    <class>com.bridge.database.HtmlItem</class>
+    <class>com.bridge.database.Indy</class>
+    <class>com.bridge.database.MasterPointMessage</class>
+    <class>com.bridge.database.MembershipApplication</class>
+    <class>com.bridge.database.Pair</class>
+    <class>com.bridge.database.Participant</class>
+    <class>com.bridge.database.Permissions</class>
+    <class>com.bridge.database.Player</class>
+    <class>com.bridge.database.ShiroRole</class>
+    <class>com.bridge.database.Team</class>
+    <class>com.bridge.database.Tournament</class>
+    <class>com.bridge.database.UILanguage</class>
+    <class>com.bridge.database.User</class>
+    <class>com.bridge.ui.ClubMenuItem</class>
+   
+    
+    
+    <properties>
+        <!--  <property name="eclipselink.profiler" value="PerformanceMonitor"/> -->
+        <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>  
+        <!--  <property name="eclipselink.logging.level" value="ALL"/> -->
+    </properties>
+        </persistence-unit> 
+</persistence>

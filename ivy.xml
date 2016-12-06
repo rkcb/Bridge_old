@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<!DOCTYPE ivy-module [
+	<!ENTITY vaadin.version "7.7.5">
+]>
+<ivy-module version="2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+	<info organisation="com.example" module="v7proj" />
+	<configurations>
+		<!-- The default configuration, which should be deployed to the server -->
+		<conf name="default" />
+		<!-- A configuration only needed when compiling the widget set. Should 
+			not be deployed to the server -->
+		<conf name="widgetset-compile" />
+		<!-- A configuration used in compilation of server side classes only.
+			Should be deployed to the server -->
+		<conf name="nodeploy" />
+	</configurations>
+	<dependencies defaultconf="default" defaultconfmapping="default->default">
+		<!-- The core server part of Vaadin -->
+		<dependency org="com.vaadin" name="vaadin-server" rev="&vaadin.version;" />
+
+		<!-- Vaadin themes -->
+		<dependency org="com.vaadin" name="vaadin-themes" rev="&vaadin.version;" />
+
+		<!-- Push support -->
+		<dependency org="com.vaadin" name="vaadin-push" rev="&vaadin.version;" />
+
+		<!-- Servlet 3.0 API -->
+		<dependency org="javax.servlet" name="javax.servlet-api" rev="3.0.1" conf="nodeploy->default" />
+
+		<!-- Precompiled DefaultWidgetSet -->
+		<dependency org="com.vaadin" name="vaadin-client-compiled"
+			rev="&vaadin.version;" />
+
+		<!-- Vaadin client side, needed for widget set compilation -->
+		<dependency org="com.vaadin" name="vaadin-client" rev="&vaadin.version;"
+			 conf="widgetset-compile->default" />
+
+		<!-- Compiler for custom widget sets. Should not be deployed -->
+		<dependency org="com.vaadin" name="vaadin-client-compiler"
+			rev="&vaadin.version;" conf="widgetset-compile->default" />
+		
+		<!-- My stuff begins -->
+        
+          <dependency org="com.vaadin.addon" name="jpacontainer" rev="3.2.0" />
+        <!-- <dependency org="com.h2database" name="h2" rev="1.3.176" /> --> 
+        <dependency org="com.h2database" name="h2" rev="1.4.192"/>
+        
+        
+        <!--<dependency org="org.eclipse.persistence" name="eclipselink" rev="2.5.1"/>-->
+        
+        <dependency org="org.hibernate" name="hibernate-validator" rev="5.1.1.Final"/>
+        <dependency org="commons-beanutils" name="commons-beanutils" rev="1.9.2"/>
+        <!-- authentication framework Shiro -->
+        <dependency org="org.apache.shiro" name="shiro-core" rev="1.2.4"/>
+        <dependency org="org.apache.shiro" name="shiro-web" rev="1.2.4"/>
+            
+        <!-- database connection pooling -->
+        <!-- <dependency org="com.zaxxer" name="HikariCP-java6" rev="2.2.5"/> -->
+        <!-- for Java 8 -->
+        <dependency org="com.zaxxer" name="HikariCP" rev="2.5.1"/>
+        <dependency org="org.javassist" name="javassist" rev="3.20.0-GA"/>
+        
+        
+        <!-- <dependency org="org.javassist" name="javassist" rev="3.18.2-GA"/> -->
+        <dependency org="org.slf4j" name="slf4j-api" rev="1.7.21"/>
+        <dependency org="org.slf4j" name="slf4j-simple" rev="1.7.21"/>
+        
+        
+        <dependency org="junit" name="junit" rev="4.12"/>
+        <!--<dependency org="org.eclipse.persistence" name="eclipselink" rev="2.5.1"/>-->
+        <dependency org="org.eclipse.persistence" name="eclipselink" rev="2.6.4"/>
+        
+        
+        <!-- email -->
+        <!-- <dependency org="com.sun.mail" name="javax.mail" rev="1.5.2"/> -->
+        <dependency org="javax.mail" name="javax.mail-api" rev="1.5.5"/>
+        
+        <dependency org="org.peimari" name="maddon" rev="1.15" />
+        
+        <!-- download -->
+        <dependency org="org.vaadin.addon" name="easyuploads" rev="7.4.3" />
+        <!-- 10 newest-->
+        <!-- confirmation dialog for Vaadin -->
+        <dependency org="org.vaadin.addon" name="confirmdialog" rev="2.1.3" />
+       <!-- <dependency org="org.scalatest" name="scalatest_2.11" rev="2.2.4"/> -->
+        
+        <!-- Markdown processor  -->
+        <dependency org="org.pegdown" name="pegdown" rev="1.6.0"/>
+        
+        <!-- Jsoup -->
+        <!-- <dependency org="org.jsoup" name="jsoup" rev="1.8.3"/> -->
+        <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+        <dependency org="org.jsoup" name="jsoup" rev="1.10.1"/>
+        
+      
+		<dependency org="org.scala-lang" name="scala-library" rev="2.11.8"/>
+		<dependency org="org.scala-lang" name="scala-reflect" rev="2.11.8"/> 
+		<dependency org="org.scala-lang" name="scala-actors" rev="2.11.8"/>
+		<!-- inject css dynamically -->	
+	
+		<dependency org="org.vaadin.addons" name="expandingtextarea" rev="1.2.0" />
+			
+		
+		
+	</dependencies>
+</ivy-module>
