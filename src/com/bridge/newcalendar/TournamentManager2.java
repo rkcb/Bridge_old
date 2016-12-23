@@ -1,5 +1,7 @@
 package com.bridge.newcalendar;
 
+import com.bridge.calendar.BridgeEventProvider;
+import com.bridge.calendar.WhiteCalendar;
 import com.bridge.database.BridgeEvent;
 import com.bridge.database.C;
 import com.bridge.database.Club;
@@ -9,17 +11,18 @@ import com.vaadin.addon.jpacontainer.EntityItem;
 
 public class TournamentManager2 {
 
-    protected TournamentCalendar calendar;
+    protected WhiteCalendar calendar;
     protected C<Tournament> tournaments = new C<>(Tournament.class);
-    protected C<BridgeEvent> events = new C<>(BridgeEvent.class);
     protected C<Club> clubs = new C<>(Club.class);
+    protected BridgeEventProvider provider;
 
-    public TournamentManager2(TournamentCalendar calendar) {
+    public TournamentManager2(WhiteCalendar calendar) {
         this.calendar = calendar;
-        events = calendar.getProvider().getContainer();
+        provider = calendar.getProvider();
     }
 
-    public TournamentCalendar getCalendar() {
+    public WhiteCalendar getCalendar() {
+
         return calendar;
     }
 
@@ -39,20 +42,34 @@ public class TournamentManager2 {
 
         e.setIsTournament(true);
         e.setOwner(BridgeUI.user.getCurrentClub());
-        Object eid = calendar.addEventGetId(e);
+        Object eid = provider.addEvent(e);
         Object tid = tournaments.add(t);
-
         bindEventAndTournament(tid, eid);
         tournaments.item(tid);
 
         return tid;
     }
 
+    /***
+     * createTournament takes the entities and creates a competion from these
+     * entities. Note that the information is not yet committed to the database
+     *
+     * @param e
+     *            bridge event entity
+     * @param t
+     *            tournament entity
+     * @param owner
+     *            owner of the tournament
+     * @return tournament entity item build from the given entities NOTE: the
+     *         user must be signed in; this is assumed here and user must have a
+     *         nonnull club returns tournament item id
+     */
     public Object createTournament(BridgeEvent e, Tournament t, Club owner) {
 
         e.setIsTournament(true);
         e.setOwner(owner);
-        Object eid = calendar.addEventGetId(e);
+        // Object eid = calendar.addEventGetId(e);
+        Object eid = provider.addEvent(e);
         Object tid = tournaments.add(t);
 
         bindEventAndTournament(tid, eid);
@@ -71,8 +88,10 @@ public class TournamentManager2 {
     public boolean bindEventAndTournament(Object tourId, Object eventId) {
 
         if (tourId != null && eventId != null) {
-            tournaments.set(tourId, "calendarEvent", events.get(eventId));
-            events.set(eventId, "tournament", tournaments.get(tourId));
+            tournaments.set(tourId, "calendarEvent",
+                    provider.getContainer().get(eventId));
+            provider.getContainer().set(eventId, "tournament",
+                    tournaments.get(tourId));
             return true;
         } else {
             return false;
@@ -94,10 +113,10 @@ public class TournamentManager2 {
             tournaments.set(tid, "calendarEvent", null);
             tournaments.rem(tid);
 
-            events.set(eid, "tournament", null);
-            events.set(eid, "owner", null);
+            provider.getContainer().set(eid, "tournament", null);
+            provider.getContainer().set(eid, "owner", null);
             tournaments.rem(tid);
-            events.rem(eid);
+            provider.getContainer().rem(eid);
             return true;
         } else {
             return false;
@@ -109,7 +128,7 @@ public class TournamentManager2 {
     }
 
     public EntityItem<BridgeEvent> getEventItem(Object eventId) {
-        return events.item(eventId);
+        return provider.getContainer().item(eventId);
     }
 
 }

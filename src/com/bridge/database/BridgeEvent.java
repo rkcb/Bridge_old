@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -79,6 +80,7 @@ public class BridgeEvent
     @Temporal(TemporalType.TIMESTAMP)
     private Date end;
 
+    @Transient
     private String styleName;
 
     @Pattern(regexp = currency, message = "Bad characters: try 1.3 for example")
@@ -97,7 +99,7 @@ public class BridgeEvent
 
     private boolean isAllDay;
 
-    private boolean isPrivate = false;
+    private boolean privateEvent = false;
 
     public static long getSerialversionuid() {
         return serialVersionUID;
@@ -296,7 +298,7 @@ public class BridgeEvent
 
     @Override
     public boolean isAllDay() {
-        return false;
+        return isAllDay;
     }
 
     public void setAllDay(boolean isAllDay) {
@@ -391,12 +393,16 @@ public class BridgeEvent
         this.isTournament = isTournament;
     }
 
-    public boolean isPrivate() {
-        return isPrivate;
+    public boolean isPrivateEvent() {
+        return privateEvent;
     }
 
-    public void setPrivate(boolean isPrivate) {
-        this.isPrivate = isPrivate;
+    public void setPrivateEvent(boolean privateEvent) {
+        this.privateEvent = privateEvent;
+    }
+
+    public static String getCurrency() {
+        return currency;
     }
 
 }

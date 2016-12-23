@@ -39,6 +39,7 @@ public class BridgeCompetionReader extends MVerticalLayout {
     protected DateField signInEnd = new DateField("Sign in end");
     protected ComboBox type = new ComboBox("Type");
     protected CheckBox registration = new CheckBox("Registration required");
+    protected CheckBox privateEvent = new CheckBox("Private event");
     protected CheckBox masterPoint = new CheckBox("Master point competion");
     protected MFormLayout fl1 = new MFormLayout();
     protected MFormLayout fl2 = new MFormLayout();
@@ -83,7 +84,7 @@ public class BridgeCompetionReader extends MVerticalLayout {
         fl1 = new MFormLayout().withMargin(true);
         fl2 = new MFormLayout().withMargin(true);
         fl1.addComponents(caption, town, signInStart, type, registration,
-                masterPoint);
+                privateEvent, masterPoint);
         fl2.addComponents(description, country, signInEnd, end, price);
         form.addComponents(fl1, fl2);
         addButtonsAndActions();
@@ -124,6 +125,7 @@ public class BridgeCompetionReader extends MVerticalLayout {
         type.setReadOnly(s);
         price.setReadOnly(s);
         registration.setReadOnly(s);
+        privateEvent.setReadOnly(s);
         masterPoint.setReadOnly(s);
     }
 

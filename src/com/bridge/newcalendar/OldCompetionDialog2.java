@@ -1,6 +1,7 @@
 package com.bridge.newcalendar;
 
 import com.bridge.calendar.CompetionDialog;
+import com.bridge.calendar.WhiteCalendar;
 import com.bridge.database.BridgeEvent;
 import com.bridge.database.Tournament;
 import com.vaadin.addon.jpacontainer.EntityItem;
@@ -18,7 +19,7 @@ public class OldCompetionDialog2 extends CompetionDialog {
     protected EntityItem<Tournament> tournamentItem;
     protected TournamentManager2 manager;
     protected Window window;
-    protected TournamentCalendar calendar;
+    protected WhiteCalendar calendar;
 
     public OldCompetionDialog2(TournamentManager2 manager, Window window) {
         this.manager = manager;

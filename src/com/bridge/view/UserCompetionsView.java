@@ -2,8 +2,8 @@ package com.bridge.view;
 
 import com.bridge.calendar.BridgeCompetionReader;
 import com.bridge.calendar.Competitors;
+import com.bridge.calendar.WhiteCalendar;
 import com.bridge.database.BridgeEvent;
-import com.bridge.newcalendar.WhiteUserCompetionCalendar;
 import com.bridge.ui.BridgeUI;
 import com.bridge.ui.EVerticalLayout;
 import com.bridge.ui.MainMenu;
@@ -12,6 +12,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClickHandler;
 
 @SuppressWarnings("serial")
 public class UserCompetionsView extends EVerticalLayout implements View {
@@ -19,7 +20,7 @@ public class UserCompetionsView extends EVerticalLayout implements View {
     public static final String name = "/user/competions";
 
     private MainMenu mainMenu;
-    private WhiteUserCompetionCalendar calendar = new WhiteUserCompetionCalendar();
+    private WhiteCalendar calendar = WhiteCalendar.getTournamentCalendar();
     private Window window;
     private BridgeCompetionReader reader;
     private Competitors competitors = null;
@@ -34,8 +35,11 @@ public class UserCompetionsView extends EVerticalLayout implements View {
         setEventClickHandler();
     }
 
+    /***
+     * setEventClickHandler defines action for an event click
+     */
     private void setEventClickHandler() {
-        calendar.setEventHandler(event -> {
+        calendar.setHandler((EventClickHandler) event -> {
             if (event.getCalendarEvent() instanceof BridgeEvent) {
                 window = new Window();
                 reader = new BridgeCompetionReader(window,
@@ -83,8 +87,7 @@ public class UserCompetionsView extends EVerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeEvent event) {
-        addComponents(mainMenu, calendar);
-        calendar.addClubSelector();
+        addComponents(mainMenu, calendar.getCompositeCalendar());
         calendar.refreshSelectedClub();
         // Object id = BridgeUI.user.getCurrentClubId();
         // TODO: all competions shown -- filter some?

@@ -112,10 +112,7 @@ public class BridgeEventProvider implements CalendarEditableEventProvider,
         if (clubFilter != null) {
             events.removeFilter(clubFilter);
         }
-
-        if (clubId != null) {
-            clubFilter = events.filterEq("owner.id", clubId);
-        }
+        clubFilter = events.filterEq("owner.id", clubId);
     }
 
     public void addEventFilter(Filter f) {
@@ -141,20 +138,27 @@ public class BridgeEventProvider implements CalendarEditableEventProvider,
     public List<CalendarEvent> getEvents(Date startDate, Date endDate) {
 
         updateStartAndEndFilters(startDate, endDate);
-
         List<CalendarEvent> results = new ArrayList<>();
 
         for (Object object : container.getItemIds()) {
             Long idd = (Long) object;
             BridgeEvent event = container.getItem(idd).getEntity();
-            if (event.getIsTournament()) {
-                String color = event.getMasterPoint() ? "color2" : "color1";
-                event.setStyleName(color);
-            }
+            event.setStyleName(getEventColor(event));
             results.add(event);
         }
 
         return results;
+    }
+
+    private String getEventColor(BridgeEvent event) {
+        // any private event tournament or not
+        if (event.isPrivateEvent()) {
+            return "color5";
+        } else if (event.getIsTournament()) {
+            return event.getMasterPoint() ? "color1" : "color2";
+        } else {
+            return !event.isRegistration() ? "color3" : "color4";
+        }
     }
 
     /***
@@ -204,8 +208,6 @@ public class BridgeEventProvider implements CalendarEditableEventProvider,
 
     /***
      * addEvent adds the event to internal list and to the container
-     *
-     * @return
      */
 
     @Override
@@ -223,6 +225,8 @@ public class BridgeEventProvider implements CalendarEditableEventProvider,
     /***
      * addEvent adds the event to the database and to the list of calendar
      * events
+     *
+     * @return id of the added calendar event entity
      */
     public Object addEvent(BridgeEvent event) {
         if (event != null && event instanceof BridgeEvent) {
@@ -297,7 +301,10 @@ public class BridgeEventProvider implements CalendarEditableEventProvider,
         return e;
     }
 
-    public int listSize() {
+    /***
+     * listSize counts event list size
+     */
+    public int eventsSize() {
         return eventList.size();
     }
 

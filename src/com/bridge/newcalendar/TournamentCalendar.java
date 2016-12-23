@@ -5,7 +5,6 @@ import java.util.Date;
 import com.bridge.calendar.BridgeEventProvider;
 import com.bridge.database.BridgeEvent;
 import com.vaadin.addon.jpacontainer.EntityItem;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Calendar;
 import com.vaadin.ui.components.calendar.handler.BasicEventMoveHandler;
 import com.vaadin.ui.components.calendar.handler.BasicEventResizeHandler;
@@ -29,7 +28,6 @@ public class TournamentCalendar extends Calendar {
     public Object addEventGetId(BridgeEvent event) {
         Object id = tournamentProvider.addEvent(event);
         markAsDirty();
-        Button b;
         return id;
     }
 

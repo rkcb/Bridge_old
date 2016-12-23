@@ -31,17 +31,12 @@ public class CompetionDialog extends VerticalLayout {
         // formlayout looks much better -- improve this
         eventEditor.embedOrganizersAndDirectors(tourEditor.getDirectors(),
                 tourEditor.getOrganizers());
-        // eventEditor.setEventEditor(true);
         addComponents(eventEditor);
 
         addButtonListeners();
 
         buttons.setMargin(true);
         buttons.setSpacing(true);
-    }
-
-    public void resetFieldErrors() {
-
     }
 
     protected void o(String s) {

@@ -1,8 +1,8 @@
 package com.bridge.view;
 
 import com.bridge.calendar.BridgeEventReader;
+import com.bridge.calendar.WhiteCalendar;
 import com.bridge.database.BridgeEvent;
-import com.bridge.newcalendar.WhiteUserEventCalendar;
 import com.bridge.ui.BridgeUI;
 import com.bridge.ui.EVerticalLayout;
 import com.bridge.ui.MainMenu;
@@ -16,6 +16,7 @@ import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClickHandl
 
 @SuppressWarnings("serial")
 public class UserEventsView extends EVerticalLayout implements View {
+
     public static final String name = "/user/events";
 
     private Window window = new Window();
@@ -23,7 +24,9 @@ public class UserEventsView extends EVerticalLayout implements View {
     private TabSheet contents = new TabSheet();
     private Tab readerDialogTab = null;
     private Tab participantsTab = null;
-    private WhiteUserEventCalendar calendar = new WhiteUserEventCalendar();
+    // private WhiteUserEventCalendar calendar = new WhiteUserEventCalendar();
+    private WhiteCalendar calendar = WhiteCalendar.getEventCalendar();
+
     private MainMenu mainMenu;
 
     /***
@@ -32,7 +35,7 @@ public class UserEventsView extends EVerticalLayout implements View {
      */
 
     private void setEventClickHandler() {
-        calendar.setEventHandler((EventClickHandler) event -> {
+        calendar.setHandler((EventClickHandler) event -> {
             if (event.getCalendarEvent() instanceof BridgeEvent) {
                 BridgeEvent e = (BridgeEvent) event.getCalendarEvent();
 
@@ -53,8 +56,8 @@ public class UserEventsView extends EVerticalLayout implements View {
     }
 
     protected void setParticipantsTab(BridgeEvent event) {
-        Table t = reader.createParticipantsTable(event.getParticipants());
-        EVerticalLayout v = new EVerticalLayout(t);
+        Table table = reader.createParticipantsTable(event.getParticipants());
+        EVerticalLayout v = new EVerticalLayout(table);
         participantsTab = contents.addTab(v);
         readerDialogTab.setCaption("Event");
         participantsTab.setCaption("Participants");
@@ -62,17 +65,15 @@ public class UserEventsView extends EVerticalLayout implements View {
 
     public UserEventsView(MainMenu mainMenu) {
         this.mainMenu = mainMenu;
-
         contents.setSizeUndefined();
         readerDialogTab = contents.addTab(reader.getDialog());
         setEventClickHandler();
-        calendar.addClubSelector();
     }
 
     @Override
     public void enter(ViewChangeEvent event) {
         calendar.refreshSelectedClub();
-        addComponents(mainMenu, calendar);
+        addComponents(mainMenu, calendar.getCompositeCalendar());
     }
 
 }

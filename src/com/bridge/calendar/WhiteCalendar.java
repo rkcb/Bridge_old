@@ -2,12 +2,15 @@ package com.bridge.calendar;
 
 import java.util.Date;
 
+import com.bridge.data.EventColorEnum;
 import com.bridge.database.BridgeEvent;
 import com.bridge.database.C;
 import com.bridge.database.Club;
+import com.bridge.ui.BridgeUI;
 import com.bridge.ui.EHorizontalLayout;
 import com.bridge.ui.EVerticalLayout;
 import com.vaadin.addon.jpacontainer.EntityItem;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Alignment;
@@ -30,11 +33,19 @@ import com.vaadin.ui.components.calendar.handler.BasicEventResizeHandler;
 @SuppressWarnings("serial")
 public class WhiteCalendar extends Calendar {
 
-    private BridgeEventProvider eventProvider;
+    private static BridgeEventProvider tournamentProvider;
+    private static BridgeEventProvider eventProvider;
+
+    private BridgeEventProvider provider;
+    private boolean tournamentCalendar;
+    private Filter mpTourFilter;
     private MenuBar calendarMenu;
     private CalendarEventColorPanel colorPanel;
     private Object clubId;
     private Label clubName;
+
+    private VerticalLayout vLayout;
+    private EHorizontalLayout hLayout;
 
     /***
      * setClubName sets the club name using club id
@@ -44,7 +55,7 @@ public class WhiteCalendar extends Calendar {
             C<Club> cs = new C<>(Club.class);
             clubName.setValue(cs.get(clubId).getName());
         } else {
-            clubName.setValue("");
+            clubName.setValue("No Club Selected");
         }
     }
 
@@ -55,6 +66,7 @@ public class WhiteCalendar extends Calendar {
 
     private void filterEventOwnerId(Object clubId) {
         eventProvider.filterClubId(clubId); // clubId null value removes filter
+        markAsDirty();
     }
 
     private void createMenuBar() {
@@ -63,6 +75,9 @@ public class WhiteCalendar extends Calendar {
         calendarMenu.addItem("Previous Month", command -> rollMonth(-1));
         calendarMenu.addItem("Month View", command -> setMonthView());
         calendarMenu.addItem("Next Month", command -> rollMonth(1));
+        if (tournamentCalendar) {
+            calendarMenu.addItem("MP Events", command -> filterMpTours());
+        }
         calendarMenu.addItem("Set Club", command -> {
             // add club filter command
             Window window = new Window("Select Club for Calendar Events");
@@ -92,6 +107,13 @@ public class WhiteCalendar extends Calendar {
     }
 
     /***
+     * filterMpTours filters MP tournaments i.e. masterPoint property is true
+     */
+    protected void filterMpTours() {
+
+    }
+
+    /***
      * addEvent adds an event to calendar and then marks the calendar dirty
      */
 
@@ -101,10 +123,54 @@ public class WhiteCalendar extends Calendar {
     }
 
     /***
+     * @param provider
+     *            BridgeEvent provider either for calendar event or tournament
+     * @param events
+     *            calendar event types in use
+     */
+    private WhiteCalendar(BridgeEventProvider provider, EventColorEnum[] events,
+            boolean isTournamentCalendar) {
+        tournamentCalendar = isTournamentCalendar;
+        this.provider = provider;
+        setEventProvider(provider);
+        // by default show home club for and nothing otherwise
+        clubId = getDefaultCalendarClub();
+        clubName = new Label();
+        createMenuBar();
+        colorPanel = new CalendarEventColorPanel(events);
+        doUISettings();
+        vLayout = null;
+        hLayout = null;
+    }
+
+    /***
+     * @return a calendar for tournaments; provider is shared between these
+     *         instances
+     */
+    public static WhiteCalendar getTournamentCalendar() {
+        if (tournamentProvider == null) {
+            tournamentProvider = BridgeEventProvider.getTournamentProvider();
+        }
+        return new WhiteCalendar(tournamentProvider,
+                EventColorEnum.tournamentEvents(), true);
+    }
+
+    /***
+     * @return a calendar for events; provider is shared between these instances
+     */
+    public static WhiteCalendar getEventCalendar() {
+        if (eventProvider == null) {
+            eventProvider = BridgeEventProvider.getCalendarEventProvider();
+        }
+        return new WhiteCalendar(eventProvider, EventColorEnum.calendarEvents(),
+                false);
+    }
+
+    /***
      * removeEvent removes the event
      */
 
-    protected void removeEvent(Object eventId) {
+    public void removeEvent(Object eventId) {
         eventProvider.removeItem(eventId);
         markAsDirty();
     }
@@ -113,6 +179,7 @@ public class WhiteCalendar extends Calendar {
         setMonthView();
         addStyleName("whiteCalendar");
         setTimeFormat(TimeFormat.Format24H);
+        refreshSelectedClub();
     }
 
     /***
@@ -123,25 +190,25 @@ public class WhiteCalendar extends Calendar {
         setClubName(clubId);
     }
 
-    /***
-     * @param provider
-     *            BridgeEvent provider
-     * @param eventDescriptions
-     *            calendar event descriptions, max five
-     */
-    public WhiteCalendar(BridgeEventProvider provider,
-            String... eventDescriptions) {
-        eventProvider = provider;
-        setEventProvider(provider);
-        clubId = null;
-        clubName = new Label();
-        createMenuBar();
-        colorPanel = new CalendarEventColorPanel(eventDescriptions);
-        doUISettings();
-    }
-
     public MenuBar getCalendarMenu() {
         return calendarMenu;
+    }
+
+    public BridgeEventProvider getProvider() {
+        return provider;
+    }
+
+    private Object getDefaultCalendarClub() {
+        Object clubId = BridgeUI.user.getCurrentClubId();
+
+        if (clubId == null || !BridgeUI.user.isSignedIn()) {
+            C<Club> clubs = new C<>(Club.class);
+            clubs.filterEq("name", "Federation");
+            if (clubs.size() == 1) {
+                clubId = clubs.at(0).getId();
+            }
+        }
+        return clubId;
     }
 
     /***
@@ -149,15 +216,16 @@ public class WhiteCalendar extends Calendar {
      * calendar and calendar event color meanings
      */
     public EHorizontalLayout getCompositeCalendar() {
-        VerticalLayout vLayout = new VerticalLayout(calendarMenu, clubName,
-                this);
-        vLayout.setComponentAlignment(clubName, Alignment.MIDDLE_CENTER);
-        vLayout.setSpacing(true);
-        clubName.addStyleName("calendarClubName");
-        clubName.setValue("Selected Club");
-        vLayout.setComponentAlignment(calendarMenu, Alignment.MIDDLE_CENTER);
-        EHorizontalLayout hLayout = new EHorizontalLayout(vLayout, colorPanel);
-        hLayout.setComponentAlignment(colorPanel, Alignment.MIDDLE_CENTER);
+        if (vLayout == null && hLayout == null) {
+            vLayout = new VerticalLayout(calendarMenu, clubName, this);
+            vLayout.setComponentAlignment(clubName, Alignment.MIDDLE_CENTER);
+            vLayout.setSpacing(true);
+            clubName.addStyleName("calendarClubName");
+            vLayout.setComponentAlignment(calendarMenu,
+                    Alignment.MIDDLE_CENTER);
+            hLayout = new EHorizontalLayout(vLayout, colorPanel);
+            hLayout.setComponentAlignment(colorPanel, Alignment.MIDDLE_CENTER);
+        }
         return hLayout;
     }
 
@@ -220,4 +288,9 @@ public class WhiteCalendar extends Calendar {
     public void refresh() {
         eventProvider.refresh();
     }
+
+    public Object addEventGetId(BridgeEvent e) {
+        return eventProvider.addEvent(e);
+    }
+
 }

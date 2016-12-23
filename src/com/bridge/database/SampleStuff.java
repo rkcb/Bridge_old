@@ -261,7 +261,7 @@ public class SampleStuff {
         if (cs.size() == 0) {
             cs.add(new Club("B52", "Helsinki"));
             cs.add(new Club("H6", "Turku"));
-            cs.add(new Club("Fed", "Helsinki"));
+            cs.add(new Club("Federation", "Helsinki"));
         }
     }
 

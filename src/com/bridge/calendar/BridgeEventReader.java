@@ -44,8 +44,6 @@ public class BridgeEventReader extends BridgeEventEditor {
     public BridgeEventReader(Window parent) {
         super(false);
 
-        // isEditing = false;
-
         events.setAutoCommit(true);
         participants.setBeanIdProperty("id");
         dialog = parent;
@@ -136,6 +134,7 @@ public class BridgeEventReader extends BridgeEventEditor {
         price.setReadOnly(s);
         registration.setReadOnly(s);
         registered.setReadOnly(s);
+        privateEvent.setReadOnly(s);
     }
 
     public boolean isUserParticipant(User user) {

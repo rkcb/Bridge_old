@@ -3,6 +3,7 @@ package com.bridge.newcalendar;
 import java.util.Date;
 
 import com.bridge.calendar.CompetionDialog;
+import com.bridge.calendar.WhiteCalendar;
 import com.bridge.database.BridgeEvent;
 import com.bridge.database.Tournament;
 import com.vaadin.ui.Notification;
@@ -15,13 +16,13 @@ public class NewCompetionDialog2 extends CompetionDialog {
 
     protected TournamentManager2 manager;
     protected Window window;
-    protected TournamentCalendar calendar;
+    protected WhiteCalendar calendar;
 
     public NewCompetionDialog2(TournamentManager2 manager, Window window) {
         this.manager = manager;
         this.window = window;
         calendar = manager.getCalendar();
-        addButtonsAndListeners();
+        addButtons();
     }
 
     public void createTournament(Date start, Date end) {
@@ -75,8 +76,7 @@ public class NewCompetionDialog2 extends CompetionDialog {
         window.close();
     }
 
-    protected void addButtonsAndListeners() {
-
+    protected void addButtons() {
         buttons.addComponents(cancel, ok);
         addComponent(buttons);
     }

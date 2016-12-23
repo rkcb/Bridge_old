@@ -22,9 +22,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 /***
- * BridgeEventEditor is a dialog to edit a calendar event or a tournament event
- * Note: tournament needs more fields than calendar's including tournament
- * organizers and directors
+ * BridgeEventEditor is a dialog to edit or read a calendar event or a
+ * tournament event Note: tournament needs more fields than calendar's including
+ * tournament organizers and directors
  */
 
 @SuppressWarnings("serial")
@@ -45,6 +45,7 @@ public class BridgeEventEditor extends HorizontalLayout {
     protected EComboBox type = new EComboBox("Type", true);
     protected ECheckBox registration = new ECheckBox("Registration required",
             false);
+    protected ECheckBox privateEvent = new ECheckBox("Private event", false);
     protected ECheckBox registered = new ECheckBox("Participate", false);
     protected ECheckBox masterPoint = new ECheckBox("Master point competion",
             false);
@@ -56,8 +57,6 @@ public class BridgeEventEditor extends HorizontalLayout {
     protected VerticalLayout organizersLayout = new VerticalLayout();
 
     private BeanFieldGroup<BridgeEvent> bfg = null;
-    // protected boolean isEditing = true;
-
     private FieldGroup fg = null;
 
     public BridgeEventEditor(boolean isTournament) {
@@ -81,17 +80,20 @@ public class BridgeEventEditor extends HorizontalLayout {
     }
 
     protected void insertFields(boolean isTournament) {
-        if (isTournament) { // tournament event
+        if (isTournament) {
+            // tournament event
             fl1 = new FormLayout(caption, town, start, end, signInStart,
                     signInEnd, masterPoint);
 
             fl2 = new FormLayout(type, description, country, price,
-                    registration);
-        } else { // calendar event
+                    registration, privateEvent);
+        } else {
+            // calendar event
             fl1 = new FormLayout(caption, town, start, end, signInStart,
                     signInEnd);
             fl1.addComponent(registered);
-            fl2 = new FormLayout(description, country, price, registration);
+            fl2 = new FormLayout(description, country, price, registration,
+                    privateEvent);
         }
     }
 
@@ -307,6 +309,7 @@ public class BridgeEventEditor extends HorizontalLayout {
         type.commit();
         registration.commit();
         masterPoint.commit();
+        privateEvent.commit();
 
         if (fg != null) {
             fg.commit();

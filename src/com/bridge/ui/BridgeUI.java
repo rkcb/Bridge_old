@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bridge.database.SampleStuff;
-import com.bridge.view.TestView;
+import com.bridge.view.UserCompetionsView;
 import com.bridge.view.ViewManager;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
@@ -56,8 +56,8 @@ public class BridgeUI extends UI {
         role = admin;
         if (SecurityUtils.getSubject().hasRole(role)) {
             setViewManagerState(role);
-            // navigator.navigateTo(UserCompetionsView.name);
-            navigator.navigateTo(TestView.name);
+            navigator.navigateTo(UserCompetionsView.name);
+            // navigator.navigateTo(TestView.name);
             // navigator.navigateTo(MainView.name);
         } else {
             setViewManagerState(anon);

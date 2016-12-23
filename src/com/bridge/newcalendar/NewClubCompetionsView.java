@@ -16,7 +16,6 @@ public class NewClubCompetionsView extends EVerticalLayout implements View {
     public NewClubCompetionsView(MainMenu mainMenu) {
         this.mainMenu = mainMenu;
         calendar = new WhiteClubCompetionCalendar();
-        calendar.addClubSelector();
     }
 
     @Override

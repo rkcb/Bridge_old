@@ -1,14 +1,14 @@
 package com.bridge.calendar;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import com.bridge.data.EventColorEnum;
 import com.bridge.ui.EVerticalLayout;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
@@ -22,44 +22,42 @@ import com.vaadin.ui.Panel;
 public class CalendarEventColorPanel extends Panel {
 
     private EVerticalLayout layout;
-    private List<String> colors;
-    private final String circle = "&#9679; ";
+    private HashSet<EventColorEnum> colors;
+    private final String circleCode = "&#9679; ";
     private final String descriptionColor = "black";
 
-    public CalendarEventColorPanel() {
-    }
-
-    public CalendarEventColorPanel(String... descriptions) {
-        Objects.requireNonNull(descriptions);
+    /***
+     * @param events
+     *            length is at most five
+     */
+    public CalendarEventColorPanel(EventColorEnum... events) {
+        Objects.requireNonNull(events);
         layout = new EVerticalLayout();
-        colors = new ArrayList<>();
-        Collections.addAll(colors, "#EE399F", "#2d9f19", "#004200", "#ce3812",
-                "#2d55cd");
+        colors = new HashSet<>();
+        Collections.addAll(colors, events);
 
-        int descSize = Integer.min(descriptions.length, colors.size());
-        for (int i = 0; i < descSize; i++) {
-            layout.addComponent(getLabel(i, descriptions[i]));
+        for (EventColorEnum color : events) {
+            layout.addComponent(getLabel(color));
         }
-
         setContent(layout);
     }
 
-    private Label getLabel(int colorIndex, String description) {
+    private Label getLabel(EventColorEnum color) {
         Label label = new Label();
-        label.setValue(getHtml(colorIndex, description));
+        label.setValue(getHtml(color));
         label.setContentMode(ContentMode.HTML);
         label.addStyleName("calendarColorLabel");
         return label;
     }
 
-    private String getHtml(int colorIndex, String description) {
+    private String getHtml(EventColorEnum color) {
         Document d = Jsoup.parse("");
         Element e = d.select("body").first();
         Element span1 = e.appendElement("span")
-                .attr("style", "color:" + colors.get(colorIndex)).html(circle);
+                .attr("style", "color:" + color.code()).html(circleCode);
 
         span1.appendElement("span").attr("style", "color:" + descriptionColor)
-                .text(description);
+                .text(color.description());
         return d.html();
     }
 
