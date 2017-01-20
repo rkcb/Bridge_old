@@ -43,11 +43,11 @@ public class SampleStuff {
         createClubs();
 
         // createSamplePlayers(0);
-        createUser("basic", "basic");
-        createUser("clubadmin", "clubadmin");
-        createUser("admin", "admin");
-        createUser("admin", "admin");
-        createUser("admin2", "admin");
+        createUser("basic", "basic", 0);
+        createUser("clubadmin", "clubadmin", 0);
+        createUser("admin", "admin", 1);
+        createUser("admin", "admin", 1);
+        createUser("admin2", "admin", 1);
         // createEscobar("admin2", "admin");
         // createFromPbns("team.pbn");
         // createFromPbns("sm1.pbn");
@@ -181,32 +181,32 @@ public class SampleStuff {
         // } catch (AuthenticationException e) {
         // }
 
-        C<Tournament> ts = new C<>(Tournament.class);
-        C<BridgeEvent> es = new C<>(BridgeEvent.class);
+        C<Tournament> tournaments = new C<>(Tournament.class);
+        C<BridgeEvent> events = new C<>(BridgeEvent.class);
 
-        if (ts.size() == 0) {
+        if (tournaments.size() == 0) {
 
             TournamentCalendar cal = new TournamentCalendar();
 
-            BridgeEvent e = new BridgeEvent("Tour", "Description", true);
-            e.setRegistration(true);
-            e.setType(Type.Team);
+            BridgeEvent event = new BridgeEvent("Tour", "Description", true);
+            event.setRegistration(true);
+            event.setType(Type.Team);
 
             TournamentManager m = new TournamentManager(cal);
-            Tournament t = new Tournament();
-            C<Player> ps = new C<>(Player.class);
+            Tournament tournament = new Tournament();
+            C<Player> players = new C<>(Player.class);
 
             Set<Player> s = new HashSet<>();
 
-            s.add(ps.at(0));
-            s.add(ps.at(1));
+            s.add(players.at(0));
+            s.add(players.at(1));
 
-            t.setDirectors(s);
-            t.setOrganizers(s);
+            tournament.setDirectors(s);
+            tournament.setOrganizers(s);
 
-            Object tid = m.createTournament(e, t, clubs.at(0));
+            Object tid = m.createTournament(event, tournament, clubs.at(0));
 
-            ts.set(tid, "owner", clubs.at(0));
+            tournaments.set(tid, "owner", clubs.at(0));
 
             // add pbn lines
 
@@ -226,8 +226,8 @@ public class SampleStuff {
             // fileList.add(file);
             // ts.set(tid, "pbnFiles", fileList);
 
-            Object eid = ts.get(tid).getCalendarEvent().getId();
-            es.set(eid, "owner", clubs.at(0));
+            Object eid = tournaments.get(tid).getCalendarEvent().getId();
+            events.set(eid, "owner", clubs.at(0));
 
             // subject.logout();
 
@@ -241,17 +241,17 @@ public class SampleStuff {
      * nonempty
      */
     private static void createBridgeEvent() {
-        C<BridgeEvent> es = new C<>(BridgeEvent.class);
-        if (es.size() == 0) {
+        C<BridgeEvent> events = new C<>(BridgeEvent.class);
+        if (events.size() == 0) {
             BridgeUI.o(
                     "Created a calendar event for " + clubs.at(0).toString());
             Calendar c = Calendar.getInstance();
-            Object id = es.add(new BridgeEvent("Caption", "description",
+            Object id = events.add(new BridgeEvent("Caption", "description",
                     c.getTime(), c.getTime()));
             Club club = clubs.at(0); // BridgeUI.user.getCurrentClub();
 
-            es.set(id, "owner", club);
-            es.set(id, "registration", true);
+            events.set(id, "owner", club);
+            events.set(id, "registration", true);
         }
 
     }
@@ -259,9 +259,9 @@ public class SampleStuff {
     private static void createClubs() {
         C<Club> cs = new C<>(Club.class);
         if (cs.size() == 0) {
-            cs.add(new Club("B52", "Helsinki"));
-            cs.add(new Club("H6", "Turku"));
-            cs.add(new Club("Federation", "Helsinki"));
+            cs.add(new Club("B52", "Helsinki", false));
+            cs.add(new Club("H6", "Turku", false));
+            cs.add(new Club("Federation", "Helsinki", true));
         }
     }
 
@@ -344,7 +344,7 @@ public class SampleStuff {
         return s == 0;
     }
 
-    public static void createUser(String userName, String role) {
+    public static void createUser(String userName, String role, int clubIndex) {
 
         if (unique(userName) && roles.size() > 0) {
             String password = "xxx";
@@ -359,7 +359,7 @@ public class SampleStuff {
 
             users.set(uid, "player", players.get(pid));
             players.set(pid, "user", users.get(uid));
-            players.set(pid, "club", clubs.at(0));
+            players.set(pid, "club", clubs.at(clubIndex));
             ShiroRole.addRoles(uid, role);
         } else {
             BridgeUI.o("username " + userName + " already exists");

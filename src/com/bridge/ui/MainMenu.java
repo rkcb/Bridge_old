@@ -189,8 +189,6 @@ public class MainMenu extends VerticalLayout {
         allAdmin.addItem("Edit Masterpoints",
                 navigateTo(MPRegistryEditView.name));
         allAdmin.addItem("Club Internals", navigateTo(ClubInternalsView.name));
-        allAdmin.addItem("Membership Applications",
-                navigateTo(ApplicationView.name));
         allAdmin.addItem("Competions", navigateTo(ClubCompetionsView.name));
         allAdmin.addItem("Events", navigateTo(ClubEventsView.name));
 
@@ -198,7 +196,7 @@ public class MainMenu extends VerticalLayout {
                 navigateTo(AdminPlayerDataEditor.name));
         allAdmin.addItem("Membership Applications",
                 navigateTo(ApplicationView.name));
-        allAdmin.addItem("Create a New Club",
+        allAdmin.addItem("Club Management",
                 navigateTo(ClubsManagementView.name));
         logout = menubar.addItem("Sign out", signOut());
     }

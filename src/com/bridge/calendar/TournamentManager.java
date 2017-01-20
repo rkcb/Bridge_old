@@ -49,12 +49,13 @@ public class TournamentManager {
         return tid;
     }
 
-    public Object createTournament(BridgeEvent e, Tournament t, Club owner) {
+    public Object createTournament(BridgeEvent event, Tournament tournament,
+            Club owner) {
 
-        e.setIsTournament(true);
-        e.setOwner(owner);
-        Object eid = calendar.addEventGetId(e);
-        Object tid = tournaments.add(t);
+        event.setIsTournament(true);
+        event.setOwner(owner);
+        Object eid = calendar.addEventGetId(event);
+        Object tid = tournaments.add(tournament);
 
         bindEventAndTournament(tid, eid);
         tournaments.item(tid);

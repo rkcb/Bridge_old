@@ -72,7 +72,7 @@ public class UserEventsView extends EVerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeEvent event) {
-        calendar.refreshSelectedClub();
+        calendar.addSearchFilters();
         addComponents(mainMenu, calendar.getCompositeCalendar());
     }
 

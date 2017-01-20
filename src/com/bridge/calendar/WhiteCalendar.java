@@ -1,6 +1,7 @@
 package com.bridge.calendar;
 
 import java.util.Date;
+import java.util.HashSet;
 
 import com.bridge.data.EventColorEnum;
 import com.bridge.database.BridgeEvent;
@@ -11,14 +12,21 @@ import com.bridge.ui.EHorizontalLayout;
 import com.bridge.ui.EVerticalLayout;
 import com.vaadin.addon.jpacontainer.EntityItem;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.data.util.filter.And;
+import com.vaadin.data.util.filter.Compare;
+import com.vaadin.data.util.filter.Not;
+import com.vaadin.data.util.filter.Or;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Calendar;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.components.calendar.handler.BasicEventMoveHandler;
@@ -36,37 +44,24 @@ public class WhiteCalendar extends Calendar {
     private static BridgeEventProvider tournamentProvider;
     private static BridgeEventProvider eventProvider;
 
+    private boolean isTournamentCalendar;
+    private boolean isMasterPoint;
+    private Object clubId; // entity id of the club of interest
+    private String town;
     private BridgeEventProvider provider;
-    private boolean tournamentCalendar;
-    private Filter mpTourFilter;
     private MenuBar calendarMenu;
     private CalendarEventColorPanel colorPanel;
-    private Object clubId;
-    private Label clubName;
+    private Label filterDescription;
+    private HashSet<String> townNameList;
+    private CheckBox masterPoint;
+    private MenuItem searchItem;
 
     private VerticalLayout vLayout;
     private EHorizontalLayout hLayout;
 
-    /***
-     * setClubName sets the club name using club id
-     */
-    private void setClubName(Object clubId) {
-        if (clubId != null) {
-            C<Club> cs = new C<>(Club.class);
-            clubName.setValue(cs.get(clubId).getName());
-        } else {
-            clubName.setValue("No Club Selected");
-        }
-    }
-
-    /***
-     * filterEventOwner preserves only those events which belong to the club and
-     * removes possible existing club filter
-     */
-
-    private void filterEventOwnerId(Object clubId) {
-        eventProvider.filterClubId(clubId); // clubId null value removes filter
-        markAsDirty();
+    private String getClubName(Object clubId) {
+        C<Club> cs = new C<>(Club.class);
+        return clubId == null ? "" : cs.get(clubId).getName();
     }
 
     private void createMenuBar() {
@@ -75,42 +70,81 @@ public class WhiteCalendar extends Calendar {
         calendarMenu.addItem("Previous Month", command -> rollMonth(-1));
         calendarMenu.addItem("Month View", command -> setMonthView());
         calendarMenu.addItem("Next Month", command -> rollMonth(1));
-        if (tournamentCalendar) {
-            calendarMenu.addItem("MP Events", command -> filterMpTours());
+        searchItem = calendarMenu.addItem("Search",
+                command -> createEventSelector());
+    }
+
+    private HashSet<String> getTownNames() {
+        C<BridgeEvent> events = new C<>(BridgeEvent.class);
+        HashSet<String> towns = new HashSet<>();
+
+        for (int i = 0; i < events.size(); i++) {
+            String twn = events.at(i).getTown();
+            if (twn != null && !twn.isEmpty()) {
+                towns.add(twn);
+            }
         }
-        calendarMenu.addItem("Set Club", command -> {
-            // add club filter command
-            Window window = new Window("Select Club for Calendar Events");
-            window.setWidth("400px");
-            window.setHeight("200px");
-            getUI().addWindow(window);
-            window.center();
-            window.setModal(true);
-            C<Club> cs = new C<>(Club.class);
-            ComboBox clubs = new ComboBox("Club", cs.c());
-            clubs.setItemCaptionMode(ItemCaptionMode.ITEM);
 
-            clubs.setFilteringMode(FilteringMode.CONTAINS);
-            Button done = new Button("Done");
-            done.addClickListener(listener -> {
-                window.close();
-                Object id = clubs.getValue();
-                filterEventOwnerId(id);
-                setClubName(id);
-                markAsDirty();
-            });
+        if (townNameList == null) {
+            townNameList = towns;
+        }
 
-            EVerticalLayout l = new EVerticalLayout(clubs, done);
-
-            window.setContent(l);
-        });
+        return towns;
     }
 
     /***
-     * filterMpTours filters MP tournaments i.e. masterPoint property is true
+     * createEventSelector
      */
-    protected void filterMpTours() {
+    private void createEventSelector() {
 
+        // create dialog window
+        Window window = new Window("Search Preferences");
+        // window.setWidth("400px");
+        // window.setHeight("200px");
+        getUI().addWindow(window);
+        window.center();
+        window.setModal(true);
+
+        // create club selector
+        C<Club> cs = new C<>(Club.class);
+        ComboBox clubs = new ComboBox("Club", cs.c());
+        clubs.setItemCaption(null, "All Clubs");
+        clubs.setItemCaptionMode(ItemCaptionMode.ITEM);
+        clubs.setFilteringMode(FilteringMode.CONTAINS);
+        clubs.setInputPrompt("Write or Select");
+
+        // create town selector
+        ComboBox town = new ComboBox("Town", getTownNames());
+        town.setFilteringMode(FilteringMode.CONTAINS);
+        town.setInputPrompt("Write or Select");
+
+        // create master point selector
+        if (isTournamentCalendar) {
+            masterPoint = new CheckBox("Only Master Point Tournaments");
+        }
+
+        Button done = new Button("Done");
+        done.addClickListener(listener -> {
+            if (isTournamentCalendar) {
+                isMasterPoint = masterPoint.getValue();
+            }
+            clubId = clubs.getValue();
+            this.town = null;
+            if (town.getValue() != null) {
+                this.town = (String) town.getValue();
+            }
+            addSearchFilters();
+            setFilterDescription();
+
+            window.close();
+            markAsDirty();
+        });
+
+        EVerticalLayout l = new EVerticalLayout(town, clubs, done);
+        if (isTournamentCalendar) {
+            l.addComponentAsFirst(masterPoint);
+        }
+        window.setContent(l);
     }
 
     /***
@@ -130,12 +164,13 @@ public class WhiteCalendar extends Calendar {
      */
     private WhiteCalendar(BridgeEventProvider provider, EventColorEnum[] events,
             boolean isTournamentCalendar) {
-        tournamentCalendar = isTournamentCalendar;
+        this.isTournamentCalendar = isTournamentCalendar;
         this.provider = provider;
         setEventProvider(provider);
         // by default show home club for and nothing otherwise
         clubId = getDefaultCalendarClub();
-        clubName = new Label();
+        filterDescription = new Label();
+        setFilterDescription();
         createMenuBar();
         colorPanel = new CalendarEventColorPanel(events);
         doUISettings();
@@ -143,9 +178,81 @@ public class WhiteCalendar extends Calendar {
         hLayout = null;
     }
 
+    private void setFilterDescription() {
+        if (isTournamentCalendar) {
+            if (clubId == null) { // no specific club
+                if (town != null && !town.isEmpty()) { // specific town
+                    String mp = isMasterPoint ? " MP " : " ";
+                    filterDescription
+                            .setValue("All" + mp + "Tournaments in " + town);
+                } else { // no specific town
+                    if (isMasterPoint) { // only master points
+                        filterDescription
+                                .setValue("All Master Point Tournaments");
+                    } else { // mp or non-mp tournaments
+                        filterDescription.setValue("All Tournaments");
+                    }
+                }
+            } else { // specific club
+                if (isMasterPoint) { // master points
+                    filterDescription.setValue(
+                            "MP Tournaments of " + getClubName(clubId));
+                } else {
+                    filterDescription.setValue(
+                            "All Tournaments of " + getClubName(clubId));
+                }
+            }
+        } else { // event calendar
+            if (clubId == null) { // no specific club
+                if (town != null && !town.isEmpty()) { // specific town
+                    filterDescription.setValue("Events in " + town);
+                } else {
+                    filterDescription.setValue("All Events");
+                }
+            } else { // specific club
+                filterDescription.setValue("Events of " + getClubName(clubId));
+            }
+        }
+    }
+
     /***
-     * @return a calendar for tournaments; provider is shared between these
-     *         instances
+     * addSearchFilters checks the search variables (clubId for example) and
+     * adds filters accordingly
+     */
+    public void addSearchFilters() {
+        provider.removeSearchFilters();
+        // filter club with the entity id
+        if (clubId != null) {
+            provider.addSearchFilters(new Compare.Equal("owner.id", clubId));
+        }
+
+        // filter master point tournaments
+        if (isTournamentCalendar && isMasterPoint) {
+            provider.addSearchFilters(new Compare.Equal("masterPoint", true));
+        }
+
+        if (town != null && !town.isEmpty()) {
+            BridgeUI.o("Add town filter: " + town);
+            provider.addSearchFilters(
+                    new SimpleStringFilter("town", town, true, false));
+        }
+
+        Object id = BridgeUI.user.getCurrentClubId();
+
+        // filter events whose
+        Filter privateFilter = new Compare.Equal("privateEvent", true);
+        Filter sameClubFilter = new Compare.Equal("owner.id", id);
+        Filter privateAndSameFilter = new And(privateFilter, sameClubFilter);
+        Filter combinedFilter = new Or(new Not(privateFilter),
+                privateAndSameFilter);
+        provider.addSearchFilters(combinedFilter);
+    }
+
+    /***
+     * @return a calendar for tournaments; event provider is shared between
+     *         these instances; note that event filters must be updated when
+     *         moving from one calendar to another
+     *
      */
     public static WhiteCalendar getTournamentCalendar() {
         if (tournamentProvider == null) {
@@ -156,7 +263,37 @@ public class WhiteCalendar extends Calendar {
     }
 
     /***
-     * @return a calendar for events; provider is shared between these instances
+     * @return a tournament which hides search menu item if user has not signed
+     *         in as "admin"
+     */
+    public static WhiteCalendar getUploadCalendar() {
+        WhiteCalendar calendar = getTournamentCalendar();
+
+        /***
+         * note that only admins can upload results for Federation since
+         * Federation has no members
+         */
+        calendar.clubId = BridgeUI.user.getCurrentClubId();
+        String role = BridgeUI.getCurrentRole();
+
+        if (role.matches("clubadmin|admin")
+                && BridgeUI.user.hasRole("clubadmin|admin")) {
+            if (!BridgeUI.getCurrentRole().matches("clubadmin")) {
+                calendar.hideSearchMenu();
+            }
+        } else {
+            calendar.hideSearchMenu();
+        }
+        calendar.addSearchFilters();
+        calendar.setFilterDescription();
+
+        return calendar;
+    }
+
+    /***
+     * @return a calendar for events; event provider is shared between these
+     *         instances; note that event filters must be updated when moving
+     *         from one calendar to another
      */
     public static WhiteCalendar getEventCalendar() {
         if (eventProvider == null) {
@@ -179,17 +316,13 @@ public class WhiteCalendar extends Calendar {
         setMonthView();
         addStyleName("whiteCalendar");
         setTimeFormat(TimeFormat.Format24H);
-        refreshSelectedClub();
     }
 
     /***
-     * refreshSelectedClub refreshes the calendar event to reflect clubId value
+     * getCalendarMenu
+     *
+     * @return MenuBar which contains month navigation and event filtering
      */
-    public void refreshSelectedClub() {
-        filterEventOwnerId(clubId);
-        setClubName(clubId);
-    }
-
     public MenuBar getCalendarMenu() {
         return calendarMenu;
     }
@@ -203,7 +336,7 @@ public class WhiteCalendar extends Calendar {
 
         if (clubId == null || !BridgeUI.user.isSignedIn()) {
             C<Club> clubs = new C<>(Club.class);
-            clubs.filterEq("name", "Federation");
+            clubs.filterEq("federation", true);
             if (clubs.size() == 1) {
                 clubId = clubs.at(0).getId();
             }
@@ -212,15 +345,23 @@ public class WhiteCalendar extends Calendar {
     }
 
     /***
+     * hideSearchMenu hides the "Search" menu item
+     */
+    public void hideSearchMenu() {
+        searchItem.setVisible(false);
+    }
+
+    /***
      * getCompositeCalendar builds a calendar which contains the calendar menu,
      * calendar and calendar event color meanings
      */
     public EHorizontalLayout getCompositeCalendar() {
         if (vLayout == null && hLayout == null) {
-            vLayout = new VerticalLayout(calendarMenu, clubName, this);
-            vLayout.setComponentAlignment(clubName, Alignment.MIDDLE_CENTER);
+            vLayout = new VerticalLayout(calendarMenu, filterDescription, this);
+            vLayout.setComponentAlignment(filterDescription,
+                    Alignment.MIDDLE_CENTER);
             vLayout.setSpacing(true);
-            clubName.addStyleName("calendarClubName");
+            filterDescription.addStyleName("calendarClubName");
             vLayout.setComponentAlignment(calendarMenu,
                     Alignment.MIDDLE_CENTER);
             hLayout = new EHorizontalLayout(vLayout, colorPanel);

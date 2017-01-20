@@ -2,9 +2,9 @@ package com.bridge.data;
 
 public enum EventColorEnum {
 
-    MP_TOURNAMENT("#FF0090", "Master Point Tournament"), NONMP_TOURNAMENT(
-            "#122DA8", "Tournament, no Master Points"), CALENDAR_EVENT(
-                    "#6BC4C4", "Calendar Event"), CALENDAR_EVENT_REG("#F66F00",
+    MP_TOURNAMENT("#122DA8", "Not a Master Point Tournament"), NONMP_TOURNAMENT(
+            "#FF0090", "Master Point Tournament"), CALENDAR_EVENT("#6BC4C4",
+                    "Calendar Event"), CALENDAR_EVENT_REG("#F66F00",
                             "Calendar Event, Registration"), PRIVATE("#00B100",
                                     "Club Members Only");
     private String colorCode;

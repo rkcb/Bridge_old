@@ -29,8 +29,8 @@
 
 // 1 = mp, 2 = no mp, 3 = cal event, 4 = cal event with reg 5 = private
 // See BridgeEventProvider.getEventColor for event styles
-// // #FF0090, #122DA8, #6BC4C4, #F66F00, #00B100
-$v-calendar-event-colors:  #122DA8,#FF0090, #6BC4C4, #F66F00, #00B100 !default;
+// #FF0090, #122DA8, #6BC4C4, #F66F00, #00B100
+$v-calendar-event-colors:  #FF0090, #122DA8, #6BC4C4, #F66F00, #00B100 !default;
 @import "../valo/valo.scss";
 
 @mixin bridge {

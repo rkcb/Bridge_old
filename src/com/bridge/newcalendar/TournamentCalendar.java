@@ -115,8 +115,8 @@ public class TournamentCalendar extends Calendar {
      */
 
     public void filterEventOwnerId(Object clubId) {
-        tournamentProvider.filterClubId(clubId); // clubId null value removes
-                                                 // filter
+        // tournamentProvider.filterClubId(clubId); // clubId null value removes
+        // filter
     }
 
     /***

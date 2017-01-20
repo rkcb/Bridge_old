@@ -32,20 +32,14 @@ public class CompetionDialog extends VerticalLayout {
         eventEditor.embedOrganizersAndDirectors(tourEditor.getDirectors(),
                 tourEditor.getOrganizers());
         addComponents(eventEditor);
-
         addButtonListeners();
 
         buttons.setMargin(true);
         buttons.setSpacing(true);
     }
 
-    protected void o(String s) {
-        System.out.println(s);
-    }
-
     protected void addButtonListeners() {
         cancel.addClickListener(event -> cancelClicked());
-
         ok.addClickListener(event -> okClicked());
     }
 

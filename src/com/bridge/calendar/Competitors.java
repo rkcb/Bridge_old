@@ -551,28 +551,17 @@ public class Competitors extends EVerticalLayout {
         }
     }
 
-    /***
-     * isAdmin checks whether the signed in user has the role clubadmin and
-     * belongs to the club which owns the tour
-     */
-
     protected boolean isAdmin() {
-        return BridgeUI.user.hasRole("admin");
-        // if (user != null && tour.getOwner() != null){
-        // boolean adminInTourClub = BridgeUI.user.getPlayerClubName().equals(
-        // tour.getOwner().getName());
-        // return (BridgeUI.user.hasRole("clubadmin") && adminInTourClub) ||
-        // BridgeUI.user.hasRole("admin");
-        // } else return false;
+        return BridgeUI.user.hasRole("admin")
+                && BridgeUI.getCurrentRole().equals("admin");
     }
 
     protected boolean isTourClubAdmin() {
         boolean adminInTourClub = BridgeUI.user.getPlayerClubName()
                 .equals(tour.getOwner().getName());
-        return BridgeUI.user.hasRole("clubadmin") && adminInTourClub;
+        return BridgeUI.user.hasRole("clubadmin")
+                && BridgeUI.getCurrentRole().equals("clubadmin")
+                && adminInTourClub;
     }
 
-    public void setReadOnlySet(boolean state) {
-
-    }
 }

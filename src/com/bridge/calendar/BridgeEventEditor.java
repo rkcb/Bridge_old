@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Set;
 
 import com.bridge.database.BridgeEvent;
+import com.bridge.database.C;
+import com.bridge.database.Club;
 import com.bridge.database.Player;
 import com.bridge.database.Tournament;
 import com.bridge.input.ECheckBox;
@@ -12,10 +14,14 @@ import com.bridge.input.EComboBox;
 import com.bridge.input.EDateField;
 import com.bridge.input.ETextArea;
 import com.bridge.input.ETextField;
+import com.bridge.ui.BridgeUI;
 import com.vaadin.addon.jpacontainer.EntityItem;
+import com.vaadin.addon.jpacontainer.fieldfactory.SingleSelectConverter;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -49,6 +55,7 @@ public class BridgeEventEditor extends HorizontalLayout {
     protected ECheckBox registered = new ECheckBox("Participate", false);
     protected ECheckBox masterPoint = new ECheckBox("Master point competion",
             false);
+    protected ComboBox owner;
     protected FormLayout fl1 = null;
     protected FormLayout fl2 = null;
 
@@ -60,6 +67,8 @@ public class BridgeEventEditor extends HorizontalLayout {
     private FieldGroup fg = null;
 
     public BridgeEventEditor(boolean isTournament) {
+
+        addOwnerComboBox();
 
         // visible only in BridgeEventReader
         registered.setVisible(false);
@@ -75,8 +84,30 @@ public class BridgeEventEditor extends HorizontalLayout {
         addComponents(fl1, fl2);
     }
 
+    private void addOwnerComboBox() {
+        C<Club> clubs = new C<>(Club.class);
+        owner = new ComboBox("Owner", clubs.c());
+        owner.setImmediate(true);
+        owner.setRequired(true);
+        owner.setConverter(new SingleSelectConverter<Club>(owner));
+        owner.setItemCaptionMode(ItemCaptionMode.ITEM);
+        owner.setNullSelectionAllowed(false);
+        Object id = BridgeUI.user.getCurrentClubId();
+        owner.setValue(id);
+
+        if (BridgeUI.getCurrentRole().matches("admin")) {
+            owner.setRequired(true);
+        } else {
+            owner.setReadOnly(true);
+        }
+    }
+
     public Date getStartDate() {
         return start.getValue();
+    }
+
+    public Object getOwnerId() {
+        return owner.getValue();
     }
 
     protected void insertFields(boolean isTournament) {
@@ -85,22 +116,22 @@ public class BridgeEventEditor extends HorizontalLayout {
             fl1 = new FormLayout(caption, town, start, end, signInStart,
                     signInEnd, masterPoint);
 
-            fl2 = new FormLayout(type, description, country, price,
+            fl2 = new FormLayout(type, description, country, price, owner,
                     registration, privateEvent);
         } else {
             // calendar event
             fl1 = new FormLayout(caption, town, start, end, signInStart,
                     signInEnd);
             fl1.addComponent(registered);
-            fl2 = new FormLayout(description, country, price, registration,
-                    privateEvent);
+            fl2 = new FormLayout(description, country, price, owner,
+                    registration, privateEvent);
         }
     }
 
-    /***
-     * setEditingState sets the editor to editing status This state shows when
-     * to hide the "Participate" field and when not
-     */
+    // /***
+    // * setEditingState sets the editor to editing status This state shows when
+    // * to hide the "Participate" field and when not
+    // */
 
     // public void setEditingState(boolean status) {
     // isEditing = status;
@@ -149,6 +180,8 @@ public class BridgeEventEditor extends HorizontalLayout {
         createList(organizersLayout, t.getDirectors());
         fl2.addComponent(directorsLayout);
         fl2.addComponent(organizersLayout);
+        fl2.addComponent(owner);
+
     }
 
     protected VerticalLayout createList(VerticalLayout l, Set<Player> ps) {
@@ -158,6 +191,13 @@ public class BridgeEventEditor extends HorizontalLayout {
         }
 
         return l;
+    }
+
+    /***
+     * isOwnerModified shows modification status of owner property
+     */
+    public boolean isOwnerModified() {
+        return owner.isModified();
     }
 
     /***
@@ -176,18 +216,20 @@ public class BridgeEventEditor extends HorizontalLayout {
      * setItemSource binds the item to the fields
      */
 
-    public void setItemSource(EntityItem<BridgeEvent> i) {
+    public void setItemSource(EntityItem<BridgeEvent> item) {
+
         bfg = null;
 
-        boolean it = (boolean) i.getItemProperty("isTournament").getValue();
+        boolean isTournament = (boolean) item.getItemProperty("isTournament")
+                .getValue();
 
-        if (it) { // is tournament
-            fg = new FieldGroup(i);
+        if (isTournament) { // is tournament
+            fg = new FieldGroup(item);
         } else { // is calendar event
             type = null;
             registered = null;
             masterPoint = null;
-            fg = new FieldGroup(i);
+            fg = new FieldGroup(item);
         }
 
         fg.bindMemberFields(this);
@@ -296,24 +338,7 @@ public class BridgeEventEditor extends HorizontalLayout {
      */
 
     public void commitTournamentEvent() throws CommitException {
-
-        description.commit();
-        caption.commit();
-        town.commit();
-        country.commit();
-        start.commit();
-        end.commit();
-        price.commit();
-        signInStart.commit();
-        signInEnd.commit();
-        type.commit();
-        registration.commit();
-        masterPoint.commit();
-        privateEvent.commit();
-
-        if (fg != null) {
-            fg.commit();
-        }
+        fg.commit();
     }
 
     public void commitCalendarEvent() throws CommitException {

@@ -74,7 +74,7 @@ public class TournamentEditor extends GridLayout {
 
     /***
      * commit commits the changes to entity item
-     * 
+     *
      * @throws Exception
      */
     @SuppressWarnings("unchecked")

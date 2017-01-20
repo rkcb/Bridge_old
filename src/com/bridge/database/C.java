@@ -107,7 +107,7 @@ public class C<T> {
 
     /***
      * add commits the entity to the database
-     * 
+     *
      * @return id of the entity
      */
     public Object add(T entity) {
@@ -127,6 +127,9 @@ public class C<T> {
 
     }
 
+    /***
+     * filter adds filter to the container
+     */
     public Filter filter(Filter f) {
         container.addContainerFilter(f);
         return f;

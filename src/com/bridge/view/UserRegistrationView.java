@@ -89,7 +89,6 @@ public class UserRegistrationView extends UserManagementView {
     protected C<MembershipApplication> as = new C<>(
             MembershipApplication.class);
 
-    //
     public UserRegistrationView(MainMenu menu) {
         super(menu);
         resetForm();
@@ -98,6 +97,9 @@ public class UserRegistrationView extends UserManagementView {
         addValidators();
 
         club.setConverter(new SingleSelectConverter<Club>(club));
+
+        // hide Bridge Federation as membership club
+        clubs.filterNeq("name", "Federation");
     }
 
     private void prefill() {

@@ -34,7 +34,7 @@ import com.vaadin.ui.TextField;
 @SuppressWarnings("serial")
 public class ClubsManagementView extends EVerticalLayout implements View {
 
-    public static final String name = "/clubsmanagement";
+    public static final String name = "/clubsManagement";
     public final static String[] rls = new String[] { "anon" };
     public final static HashSet<String> roles = new HashSet<>(
             Arrays.asList(rls));
@@ -226,8 +226,7 @@ public class ClubsManagementView extends EVerticalLayout implements View {
                 boolean a = (boolean) event.getProperty().getValue();
                 if (!a) {
                     ConfirmDialog.show(getUI(), "Confirmation",
-                            "Inactivating club removes all its members "
-                                    + " and sets it to inactive state",
+                            "Inactive club cannot create tournaments or events or any other",
                             "I understand", "Oops, cancel",
                             (org.vaadin.dialogs.ConfirmDialog.Listener) dialog -> {
                                 if (dialog.isCanceled()) {
@@ -248,15 +247,8 @@ public class ClubsManagementView extends EVerticalLayout implements View {
                 if (valid) {
                     try {
                         if (!active.getValue()) {
-                            Club c = clubs.get(id);
-                            // removes all club members
-                            for (Player p : c.getMembers()) {
-                                ps.set(p.getId(), "club", null);
-                            }
-                            clubs.set(id, "members", new HashSet<Player>());
                             ps.refresh();
                             ps.removeFilters();
-                            o("player count: " + ps.size());
                         }
                         fg.commit();
                         fl.removeAllComponents();

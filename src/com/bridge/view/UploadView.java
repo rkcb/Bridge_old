@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
 
 import org.vaadin.easyuploads.MultiFileUpload;
 
+import com.bridge.calendar.WhiteCalendar;
 import com.bridge.database.BridgeEvent;
 import com.bridge.database.C;
 import com.bridge.database.MasterPointMessage;
 import com.bridge.database.PbnFile;
 import com.bridge.database.Player;
 import com.bridge.database.Tournament;
-import com.bridge.newcalendar.UploadCalendar;
 import com.bridge.resultui.TotalScoreTable;
 import com.bridge.ui.BridgeUI;
 import com.bridge.ui.ETable;
@@ -38,6 +38,7 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.components.calendar.CalendarComponentEvents.EventClickHandler;
 
 import scala.bridge.MPTools;
 import scala.bridge.TableFactory;
@@ -47,7 +48,7 @@ public class UploadView extends EVerticalLayout implements View {
 
     public static final String name = "/admin/upload";
 
-    protected UploadCalendar calendar = new UploadCalendar();
+    protected WhiteCalendar calendar = WhiteCalendar.getUploadCalendar();
     protected C<Player> players = new C<>(Player.class);
     protected C<MasterPointMessage> mpMessages = new C<>(
             MasterPointMessage.class);
@@ -472,7 +473,6 @@ public class UploadView extends EVerticalLayout implements View {
         tourId = e.getTournament().getId();
         ts = new C<>(Tournament.class);
         List<PbnFile> ls = ts.get(tourId).getPbnFiles();
-        BridgeUI.o("pbn files in tour in window creation: " + ls.size());
         table.removeAllItems();
         pbnc.addAll(ls);
         HorizontalLayout buttons = new HorizontalLayout(setFinalResults, remove,
@@ -490,7 +490,7 @@ public class UploadView extends EVerticalLayout implements View {
     }
 
     protected void addEventClickHandler() {
-        calendar.setEventHandler(event -> {
+        calendar.setHandler((EventClickHandler) event -> {
             window.setClosable(false);
             window.addStyleName("uploadWindow");
             window.setCaption("File Upload Window");
@@ -509,19 +509,7 @@ public class UploadView extends EVerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeEvent event) {
-
-        addComponents(mainMenu, calendar);
-        Object cid = BridgeUI.user.getCurrentClubId();
-
-        if (BridgeUI.user.hasRole("admin")) {
-            calendar.addClubSelector();
-            calendar.setClubName(cid);
-        } else if (BridgeUI.user.hasRole("clubadmin")) {
-            calendar.setClubName(cid);
-            calendar.filterEventOwnerId(cid);
-        } else {
-            getUI().getNavigator().navigateTo(LoginView.name);
-        }
+        addComponents(mainMenu, calendar.getCompositeCalendar());
 
     }
 

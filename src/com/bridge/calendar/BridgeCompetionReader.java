@@ -40,6 +40,7 @@ public class BridgeCompetionReader extends MVerticalLayout {
     protected ComboBox type = new ComboBox("Type");
     protected CheckBox registration = new CheckBox("Registration required");
     protected CheckBox privateEvent = new CheckBox("Private event");
+    protected ComboBox owner = new ComboBox("Club");
     protected CheckBox masterPoint = new CheckBox("Master point competion");
     protected MFormLayout fl1 = new MFormLayout();
     protected MFormLayout fl2 = new MFormLayout();
@@ -83,9 +84,9 @@ public class BridgeCompetionReader extends MVerticalLayout {
         form.withMargin(true).removeAllComponents();
         fl1 = new MFormLayout().withMargin(true);
         fl2 = new MFormLayout().withMargin(true);
-        fl1.addComponents(caption, town, signInStart, type, registration,
-                privateEvent, masterPoint);
-        fl2.addComponents(description, country, signInEnd, end, price);
+        fl1.addComponents(caption, town, signInStart, signInEnd, type,
+                registration, privateEvent, masterPoint);
+        fl2.addComponents(description, price, owner, country, start, end);
         form.addComponents(fl1, fl2);
         addButtonsAndActions();
         addComponents(form, buttons);
@@ -124,6 +125,7 @@ public class BridgeCompetionReader extends MVerticalLayout {
         end.setReadOnly(s);
         type.setReadOnly(s);
         price.setReadOnly(s);
+        owner.setReadOnly(s);
         registration.setReadOnly(s);
         privateEvent.setReadOnly(s);
         masterPoint.setReadOnly(s);

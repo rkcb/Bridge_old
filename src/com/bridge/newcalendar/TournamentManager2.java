@@ -123,6 +123,17 @@ public class TournamentManager2 {
         }
     }
 
+    /***
+     * changeEventOwner changes the event owner
+     */
+    public void changeEventOwner(Object tourId, Object eventId,
+            Object newClubId) {
+        if (newClubId != null) {
+            tournaments.set(tourId, "owner", clubs.get(newClubId));
+            provider.getContainer().set(eventId, "owner", clubs.get(newClubId));
+        }
+    }
+
     public EntityItem<Tournament> getTournamentItem(Object tournamentId) {
         return tournamentId == null ? null : tournaments.item(tournamentId);
     }

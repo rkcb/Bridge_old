@@ -82,7 +82,7 @@ public class ClubCompetionsView extends EVerticalLayout implements View {
     @Override
     public void enter(ViewChangeEvent event) {
         addComponents(mainMenu, calendar.getCompositeCalendar());
-        calendar.refreshSelectedClub();
+        calendar.addSearchFilters();
     }
 
 }

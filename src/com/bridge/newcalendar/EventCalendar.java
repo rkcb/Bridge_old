@@ -88,7 +88,8 @@ public class EventCalendar extends Calendar {
      */
 
     public void filterEventOwnerId(Object clubId) {
-        eventProvider.filterClubId(clubId); // clubId null value removes filter
+        // eventProvider.filterClubId(clubId); // clubId null value removes
+        // filter
     }
 
     /***

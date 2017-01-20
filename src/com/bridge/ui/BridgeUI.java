@@ -31,7 +31,7 @@ public class BridgeUI extends UI {
             .getLogger(BridgeUI.class);
     protected static Navigator navigator;
     protected static ViewManager viewManager = null;
-    public static String role = "";
+    private static String role = "";
     public static final String anon = "anon";
     public static final String basic = "basic";
     public static final String clubadmin = "clubadmin";
@@ -53,7 +53,7 @@ public class BridgeUI extends UI {
 
         // must be first because there are no users yet!
 
-        role = admin;
+        role = basic;
         if (SecurityUtils.getSubject().hasRole(role)) {
             setViewManagerState(role);
             navigator.navigateTo(UserCompetionsView.name);
@@ -106,11 +106,11 @@ public class BridgeUI extends UI {
      * setViewManagerState creates only views allowed for this role
      */
 
-    public static void setViewManagerState(String role) {
+    public static void setViewManagerState(String role2) {
         navigator = new Navigator(getCurrent(), getCurrent());
         viewManager = new ViewManager(navigator);
-        viewManager.addViews(role); // sets the effective role (e.g. admin can
-                                    // choose to be "basicuser")
+        viewManager.addViews(role2); // sets the effective role (e.g. admin can
+                                     // choose to be "basicuser")
     }
 
     static public void o(String s) {

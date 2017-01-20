@@ -7,7 +7,6 @@ import com.bridge.database.Club;
 import com.bridge.database.Player;
 import com.bridge.database.ShiroRole;
 import com.bridge.database.User;
-import com.bridge.ui.BridgeUI;
 import com.bridge.ui.EHorizontalLayout;
 import com.bridge.ui.EVerticalLayout;
 import com.bridge.ui.MainMenu;
@@ -60,6 +59,7 @@ public class AdminPlayerDataEditor extends EVerticalLayout implements View {
     protected CheckBox telephonePrivate = new CheckBox("Telephone nr. hidden");
 
     protected Label group3 = new Label("<b>Player Information</b>");
+    protected ComboBox club = new ComboBox("Club");
     protected CheckBox federationMember = new CheckBox("Federation member");
     protected CheckBox foreignWBFClubMember = new CheckBox(
             "Foreign club member");
@@ -77,17 +77,17 @@ public class AdminPlayerDataEditor extends EVerticalLayout implements View {
             secondName, lastName, yearOfBirth, nationality, language, alive);
     protected EVerticalLayout l2 = new EVerticalLayout(group2, username, email,
             telephone, address, town, postalCode, country);
-    protected EVerticalLayout l3 = new EVerticalLayout(group3, federationMember,
-            foreignWBFClubMember, federationCode, directorQualifications,
-            masterpoints);
+    protected EVerticalLayout l3 = new EVerticalLayout(group3, club,
+            federationMember, foreignWBFClubMember, federationCode,
+            directorQualifications, masterpoints);
 
     protected EVerticalLayout l4 = new EVerticalLayout(group4, optionGroup);
     protected EHorizontalLayout hl = new EHorizontalLayout(l1, l2, l3, l4);
 
     protected MainMenu menu;
-    protected C<User> us = new C<>(User.class);
-    protected C<Player> ps = new C<>(Player.class);
-    protected C<Club> cs = new C<>(Club.class);
+    protected C<User> users = new C<>(User.class);
+    protected C<Player> players = new C<>(Player.class);
+    protected C<Club> clubs = new C<>(Club.class);
     protected FieldGroup fgu = null; // User
     protected FieldGroup fgp = null; // Player
 
@@ -110,8 +110,9 @@ public class AdminPlayerDataEditor extends EVerticalLayout implements View {
         optionGroup.setMultiSelect(false);
         optionGroup.setItemCaptionMode(ItemCaptionMode.ITEM);
 
-        addMenuItems();
+        club.setConverter(Club.class);
 
+        addMenuItems();
         email.addValidator(new EmailValidator("Not a valid email address"));
     }
 
@@ -136,36 +137,31 @@ public class AdminPlayerDataEditor extends EVerticalLayout implements View {
                     (org.vaadin.dialogs.ConfirmDialog.Listener) dialog -> {
                         if (dialog.isConfirmed()) {
                             Object uid = search.getValue();
-                            BridgeUI.o("us size before removal: " + us.size());
-                            BridgeUI.o("ps size before removal: " + us.size());
-                            Player p = us.get(uid).getPlayer();
+                            Player p = users.get(uid).getPlayer();
                             C<Player> ps = new C<>(Player.class);
                             ps.set(p.getId(), "club", null);
-                            us.rem(uid);
-
-                            BridgeUI.o("us size after removal: " + us.size());
-                            BridgeUI.o("ps size after removal: " + us.size());
+                            users.rem(uid);
                         } else {
                         }
                     });
-
         } else {
             Notification.show("No user selected", Type.ERROR_MESSAGE);
         }
     }
 
     protected void addSearch() {
-        search = new ComboBox("Search", us.c());
+        search = new ComboBox("Search", users.c());
         search.setItemCaptionMode(ItemCaptionMode.ITEM);
         search.setFilteringMode(FilteringMode.CONTAINS);
         search.setNullSelectionAllowed(false);
         search.addValueChangeListener(listener -> {
             Object uid = search.getValue();
-            User u = us.get(search.getValue());
-            fgu = new FieldGroup(us.item(uid));
+            User u = users.get(search.getValue());
+            fgu = new FieldGroup(users.item(uid));
             if (u.getPlayer() != null) {
-                fgp = new FieldGroup(ps.item(u.getPlayer().getId()));
+                fgp = new FieldGroup(players.item(u.getPlayer().getId()));
                 fgp.bindMemberFields(this);
+                club.setReadOnly(true);
             }
             fgu.bindMemberFields(this);
 
@@ -174,7 +170,6 @@ public class AdminPlayerDataEditor extends EVerticalLayout implements View {
             setFieldsReadOnly();
         });
         search.setWidth("300px");
-
     }
 
     protected void cancelEditing() {
@@ -232,6 +227,7 @@ public class AdminPlayerDataEditor extends EVerticalLayout implements View {
         email.setReadOnly(b);
         telephone.setReadOnly(b);
 
+        club.setReadOnly(b);
         federationCode.setReadOnly(b);
         federationMember.setReadOnly(b);
         foreignWBFClubMember.setReadOnly(b);
@@ -275,19 +271,18 @@ public class AdminPlayerDataEditor extends EVerticalLayout implements View {
         username.addValidator(new RegexpValidator("\\w{5,30}",
                 "Username must be 5-30 characters long and consist of a-z and 0-9"));
         username.addValidator(value -> {
-            Filter f = us.filterEq("username", value);
-            if (us.size() >= 1
-                    && us.at(0).getId() != (Long) search.getValue()) {
+            Filter f = users.filterEq("username", value);
+            if (users.size() >= 1
+                    && users.at(0).getId() != (Long) search.getValue()) {
                 throw new InvalidValueException("Username is already in use");
             }
-            us.removeFilter(f);
+            users.removeFilter(f);
         });
 
     }
 
     @Override
     public void enter(ViewChangeEvent event) {
-
         addComponents(menu, submenu, search, hl);
     }
 

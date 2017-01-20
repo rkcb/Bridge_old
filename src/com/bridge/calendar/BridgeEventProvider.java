@@ -28,11 +28,10 @@ public class BridgeEventProvider implements CalendarEditableEventProvider,
     private Filter startTime;
     private Filter endTime;
     private Filter eventFilter; // filter calendar or tournament events
-    private Filter clubFilter; // filter club id
-
     private List<EventSetChangeListener> listeners = new ArrayList<>();
 
     protected List<BridgeEvent> eventList = new ArrayList<>();
+    protected List<Filter> searchFilters = new ArrayList<>();
 
     private JPAContainer<BridgeEvent> container;
     private C<BridgeEvent> events;
@@ -104,19 +103,8 @@ public class BridgeEventProvider implements CalendarEditableEventProvider,
         eventFilter = events.filterEq("isTournament", filterValue);
     }
 
-    /***
-     * filterClub preserves all events whose owner id matches clubId
-     */
-
-    public void filterClubId(Object clubId) {
-        if (clubFilter != null) {
-            events.removeFilter(clubFilter);
-        }
-        clubFilter = events.filterEq("owner.id", clubId);
-    }
-
-    public void addEventFilter(Filter f) {
-        container.addContainerFilter(f);
+    public List<Filter> getSearchFilters() {
+        return searchFilters;
     }
 
     private void updateStartAndEndFilters(Date startDate, Date endDate) {
@@ -173,9 +161,22 @@ public class BridgeEventProvider implements CalendarEditableEventProvider,
         }
     }
 
-    // public List<BridgeEvent> getEventList() {
-    // return eventList;
-    // }
+    public void addSearchFilters(Filter... filters) {
+        for (Filter f : filters) {
+            searchFilters.add(f);
+            events.filter(f);
+        }
+    }
+
+    /***
+     * removeSearchFilters removes searchFilter list and these filters from the
+     * event container
+     */
+    public void removeSearchFilters() {
+        for (Filter filter : searchFilters) {
+            events.removeFilter(filter);
+        }
+    }
 
     /***
      * updateEvent commits changes to the edited event and commits changes to

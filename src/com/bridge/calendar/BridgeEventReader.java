@@ -135,6 +135,7 @@ public class BridgeEventReader extends BridgeEventEditor {
         registration.setReadOnly(s);
         registered.setReadOnly(s);
         privateEvent.setReadOnly(s);
+        owner.setReadOnly(s);
     }
 
     public boolean isUserParticipant(User user) {

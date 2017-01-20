@@ -45,7 +45,7 @@ public class BridgeEvent
 
     @OneToOne(mappedBy = "calendarEvent", cascade = CascadeType.ALL)
     @Valid
-    private Tournament tournament = null;
+    private Tournament tournament;
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Club owner;

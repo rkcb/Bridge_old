@@ -1,5 +1,8 @@
 package com.bridge.view;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import com.bridge.calendar.BridgeCompetionReader;
 import com.bridge.calendar.Competitors;
 import com.bridge.calendar.WhiteCalendar;
@@ -27,7 +30,7 @@ public class UserCompetionsView extends EVerticalLayout implements View {
     private TabSheet contents = null;
     private Tab readerDialogTab = null;
     private Tab competitorsTab = null;
-    private BridgeEvent ev;
+    private BridgeEvent bridgeEvent;
 
     public UserCompetionsView(MainMenu menu) {
         setCaption("Competitors");
@@ -44,11 +47,12 @@ public class UserCompetionsView extends EVerticalLayout implements View {
                 window = new Window();
                 reader = new BridgeCompetionReader(window,
                         getUI().getNavigator());
-                ev = (BridgeEvent) event.getCalendarEvent();
+                bridgeEvent = (BridgeEvent) event.getCalendarEvent();
                 contents = new TabSheet();
                 initEventTab();
 
-                if (ev.isRegistration()) {
+                if (bridgeEvent.isRegistration()
+                        && !registrationExpired(bridgeEvent)) {
                     boolean anonymous = !BridgeUI.user.isSignedIn();
                     initCompetitorsTab(anonymous);
                 }
@@ -57,10 +61,19 @@ public class UserCompetionsView extends EVerticalLayout implements View {
         });
     }
 
+    private boolean registrationExpired(BridgeEvent e) {
+        java.util.Calendar cal = Calendar.getInstance();
+        Date date = e.getSignInEnd();
+        date = date == null ? e.getEnd() : date;
+
+        boolean isExpired = date == null ? true : date.before(cal.getTime());
+        return isExpired;
+    }
+
     private void initEventTab() {
         readerDialogTab = contents.addTab(reader);
         readerDialogTab.setCaption("Event");
-        reader.initialize(ev);
+        reader.initialize(bridgeEvent);
     }
 
     private void initCompetitorsTab(boolean readOnly) {
@@ -69,7 +82,8 @@ public class UserCompetionsView extends EVerticalLayout implements View {
         }
 
         competitors = new Competitors();
-        competitors.initialize(ev, BridgeUI.user.getCurrentUser(), readOnly);
+        competitors.initialize(bridgeEvent, BridgeUI.user.getCurrentUser(),
+                readOnly);
         competitorsTab = contents.addTab(competitors);
         competitorsTab.setCaption("Competitors");
         contents.setSelectedTab(readerDialogTab);
@@ -88,9 +102,7 @@ public class UserCompetionsView extends EVerticalLayout implements View {
     @Override
     public void enter(ViewChangeEvent event) {
         addComponents(mainMenu, calendar.getCompositeCalendar());
-        calendar.refreshSelectedClub();
-        // Object id = BridgeUI.user.getCurrentClubId();
-        // TODO: all competions shown -- filter some?
+        calendar.addSearchFilters();
     }
 
 }

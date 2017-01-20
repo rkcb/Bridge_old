@@ -36,7 +36,7 @@ import com.vaadin.ui.VerticalLayout;
 public class ApplicationView extends VerticalLayout implements View {
 
     public static final String name = "/admin/applications";
-    protected C<MembershipApplication> as = new C<>(
+    protected C<MembershipApplication> applications = new C<>(
             MembershipApplication.class);
     protected Table table = new Table("");
     protected MainMenu menu;
@@ -53,25 +53,27 @@ public class ApplicationView extends VerticalLayout implements View {
     protected Object selectedClubId = null;
     protected Filter clubFilter = null;
     protected ComboBox clubSelector = null;
-    protected C<Club> cs = new C<>(Club.class);
+    protected C<Club> clubs = new C<>(Club.class);
     protected EHorizontalLayout selectors;
 
     public ApplicationView(MainMenu menu) {
 
         this.menu = menu;
 
+        // filter Bridge Federation Club away
+
         table.setPageLength(0);
         setSpacing(true);
         setMargin(true);
 
-        as.nest("user.firstName");
-        as.nest("user.lastName");
-        as.nest("club.name");
-        as.nest("player.federationCode");
-        as.nest("player.foreignWBFClubMember");
-        as.nest("user.email");
+        applications.nest("user.firstName");
+        applications.nest("user.lastName");
+        applications.nest("club.name");
+        applications.nest("player.federationCode");
+        applications.nest("player.foreignWBFClubMember");
+        applications.nest("user.email");
 
-        table.setContainerDataSource(as.c());
+        table.setContainerDataSource(applications.c());
         table.setColumnHeader("submitted", "Submitted");
         table.setColumnHeader("user.firstName", "First name");
         table.setColumnHeader("user.lastName", "Last name");
@@ -100,27 +102,28 @@ public class ApplicationView extends VerticalLayout implements View {
      */
 
     protected void acceptClubSwitches(List<InternetAddress> emails) {
-        Stream<Object> s = as.c().getItemIds().stream()
+        Stream<Object> s = applications.c().getItemIds().stream()
                 .filter(id -> table.isSelected(id));
-        List<Object> ids = s.filter(id -> as.get(id).getOldClubId() != null)
+        List<Object> ids = s
+                .filter(id -> applications.get(id).getOldClubId() != null)
                 .collect(Collectors.toList());
 
         for (Object id : ids) {
-            MembershipApplication a = as.get(id);
+            MembershipApplication a = applications.get(id);
             C<Player> ps = new C<>(Player.class);
             Long pid = a.getPlayerId();
             ps.set(pid, "club", null);
-            Club c1 = cs.get(a.getOldClubId());
-            Club c2 = cs.get(a.getNewClubId());
-            cs.set(c1.getId(), "members", c1.removePlayer(pid));
+            Club c1 = clubs.get(a.getOldClubId());
+            Club c2 = clubs.get(a.getNewClubId());
+            clubs.set(c1.getId(), "members", c1.removePlayer(pid));
             ps.set(pid, "club", c2);
-            cs.set(c2.getId(), "members", c2.addPlayer(pid));
+            clubs.set(c2.getId(), "members", c2.addPlayer(pid));
             try {
                 emails.add(new InternetAddress(a.getUser().getEmail()));
             } catch (AddressException e) {
                 e.printStackTrace();
             }
-            as.rem(a.getId());
+            applications.rem(a.getId());
         }
 
     }
@@ -130,7 +133,8 @@ public class ApplicationView extends VerticalLayout implements View {
      */
 
     protected Stream<Object> getSelected() {
-        return as.c().getItemIds().stream().filter(id -> table.isSelected(id));
+        return applications.c().getItemIds().stream()
+                .filter(id -> table.isSelected(id));
     }
 
     /***
@@ -153,7 +157,7 @@ public class ApplicationView extends VerticalLayout implements View {
         // add the remaing new account applications
 
         for (Object id : selected.toArray()) {
-            MembershipApplication a = as.get(id);
+            MembershipApplication a = applications.get(id);
             try {
                 emails.add(new InternetAddress(a.getUser().getEmail()));
             } catch (AddressException e) {
@@ -169,7 +173,7 @@ public class ApplicationView extends VerticalLayout implements View {
             ps.set(pid, "user", us.get(uid));
             ps.set(pid, "club", a.getPlayer().getClub());
 
-            as.rem(id);
+            applications.rem(id);
 
         }
         // send applications information about
@@ -213,13 +217,13 @@ public class ApplicationView extends VerticalLayout implements View {
         });
 
         selectAll.addClickListener(listener -> {
-            for (Object id : as.c().getItemIds()) {
+            for (Object id : applications.c().getItemIds()) {
                 table.select(id);
             }
         });
 
         deselectAll.addClickListener(listener -> {
-            for (Object id : as.c().getItemIds()) {
+            for (Object id : applications.c().getItemIds()) {
                 table.unselect(id);
             }
         });
@@ -232,12 +236,12 @@ public class ApplicationView extends VerticalLayout implements View {
 
     @SuppressWarnings("unused")
     private void addClubFilter() {
-        as.removeFilters();
+        applications.removeFilters();
         String name = BridgeUI.user.getPlayerClubName();
-        as.nest("player.club.name");
+        applications.nest("player.club.name");
         SimpleStringFilter f = new SimpleStringFilter("player.club.name", name,
                 false, false);
-        as.filter(f);
+        applications.filter(f);
     }
 
     /***
@@ -246,24 +250,27 @@ public class ApplicationView extends VerticalLayout implements View {
 
     private void createSelectors() {
 
-        clubSelector = new ComboBox("Club Selector", cs.c());
+        clubSelector = new ComboBox("Club Selector", clubs.c());
+        // Federation cannot have members it only owns competions
+        // or calendar events
+        clubs.filterNeq("federation", false);
         clubSelector.setImmediate(true);
         clubSelector.setItemCaptionMode(ItemCaptionMode.ITEM);
 
         clubSelector.addValueChangeListener(listener -> {
-            as.removeFilters();
+            applications.removeFilters();
             if (clubSelector.getValue() != null) {
-                clubFilter = as.filterEq("club.id", clubSelector.getValue());
+                clubFilter = applications.filterEq("club.id",
+                        clubSelector.getValue());
             }
-
         });
 
         foreigners = new CheckBox("Show only non-Finnish club applications");
         foreigners.addValueChangeListener(listener -> {
             if (foreigners.getValue()) {
-                as.filterEq("player.foreignWBFClubMember", true);
+                applications.filterEq("player.foreignWBFClubMember", true);
             } else {
-                as.removeFilters();
+                applications.removeFilters();
             }
         });
 
@@ -271,8 +278,8 @@ public class ApplicationView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeEvent event) {
-        as.refresh();
-        String role = BridgeUI.role;
+        applications.refresh();
+        String role = BridgeUI.getCurrentRole();
 
         if (role.matches("admin") || role.matches("clubadmin")) {
             if (role.matches("admin")) {

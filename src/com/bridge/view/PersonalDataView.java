@@ -67,6 +67,7 @@ public class PersonalDataView extends EVerticalLayout implements View {
     protected TextArea directorQualifications = new TextArea(
             "Director qualifications");
     protected TextField masterpoints = new TextField("Masterpoints");
+    protected ComboBox club = new ComboBox("Club");
 
     protected Label group4 = new Label("<b>User Roles</b>");
     protected C<ShiroRole> shiroRoles = new C<>(ShiroRole.class);
@@ -78,18 +79,18 @@ public class PersonalDataView extends EVerticalLayout implements View {
     protected EVerticalLayout l2 = new EVerticalLayout(group2, username, email,
             emailPrivate, telephone, telephonePrivate, address, town,
             postalCode, country);
-    protected EVerticalLayout l3 = new EVerticalLayout(group3, federationMember,
-            foreignWBFClubMember, federationCode, directorQualifications,
-            masterpoints);
+    protected EVerticalLayout l3 = new EVerticalLayout(group3, club,
+            federationMember, foreignWBFClubMember, federationCode,
+            directorQualifications, masterpoints);
 
     protected EVerticalLayout l4 = new EVerticalLayout(group4, optionGroup);
     protected EHorizontalLayout hl = new EHorizontalLayout(l1, l2, l3, l4);
 
     protected MainMenu menu;
-    protected C<User> us = new C<>(User.class);
-    protected C<Player> ps = new C<>(Player.class);
-    protected FieldGroup fgu = null; // User
-    protected FieldGroup fgp = null; // Player
+    protected C<User> users = new C<>(User.class);
+    protected C<Player> players = new C<>(Player.class);
+    protected FieldGroup fgUser = null;
+    protected FieldGroup fgPlayer = null;
 
     protected MenuBar submenu = new MenuBar();
     protected Object UserId = null;
@@ -113,10 +114,11 @@ public class PersonalDataView extends EVerticalLayout implements View {
 
         User u = BridgeUI.user.getCurrentUser();
         Player p = u.getPlayer();
-        fgu = new FieldGroup(us.item(u.getId()));
-        fgu.bindMemberFields(this);
+        fgUser = new FieldGroup(users.item(u.getId()));
+        fgUser.bindMemberFields(this);
         if (p != null) {
-            fgp = new FieldGroup(ps.item(p.getId()));
+            fgPlayer = new FieldGroup(players.item(p.getId()));
+            fgPlayer.buildAndBindMemberFields(this);
         }
 
         setFieldsReadOnly();
@@ -204,6 +206,7 @@ public class PersonalDataView extends EVerticalLayout implements View {
         foreignWBFClubMember.setReadOnly(b);
         directorQualifications.setReadOnly(b);
         masterpoints.setReadOnly(b);
+        club.setReadOnly(b);
 
         emailPrivate.setReadOnly(b);
         telephonePrivate.setReadOnly(b);
@@ -218,12 +221,9 @@ public class PersonalDataView extends EVerticalLayout implements View {
         firstName.setReadOnly(b);
         secondName.setReadOnly(b);
         lastName.setReadOnly(b);
-        // yearOfBirth.setReadOnly(b);
         nationality.setReadOnly(b);
         language.setReadOnly(b);
-        // alive.setReadOnly(b);
 
-        // username.setReadOnly(b);
         address.setReadOnly(b);
         town.setReadOnly(b);
         postalCode.setReadOnly(b);
@@ -231,23 +231,21 @@ public class PersonalDataView extends EVerticalLayout implements View {
         email.setReadOnly(b);
         telephone.setReadOnly(b);
 
-        // federationMember.setReadOnly(b);
         foreignWBFClubMember.setReadOnly(b);
         directorQualifications.setReadOnly(b);
 
         emailPrivate.setReadOnly(b);
         telephonePrivate.setReadOnly(b);
 
-        // optionGroup.setReadOnly(b);
     }
 
     protected void cancelEditing() {
         if (!readOnlyStatus) {
-            if (fgu != null) {
-                fgu.discard();
+            if (fgUser != null) {
+                fgUser.discard();
             }
-            if (fgp != null) {
-                fgp.discard();
+            if (fgPlayer != null) {
+                fgPlayer.discard();
             }
             setFieldsReadOnly();
         }
@@ -261,8 +259,8 @@ public class PersonalDataView extends EVerticalLayout implements View {
                         if (dialog.isConfirmed()) {
 
                             try {
-                                fgu.commit();
-                                fgp.commit();
+                                fgUser.commit();
+                                fgPlayer.commit();
                                 setFieldsReadOnly();
                                 // update search data
                                 UserClubMembersView.refresh();

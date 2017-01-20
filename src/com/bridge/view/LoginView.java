@@ -94,7 +94,6 @@ public class LoginView extends EVerticalLayout implements View {
 
                     String role = shiroRoles.get(roles.getValue()).getName();
                     BridgeUI.o("selected role: " + role);
-                    BridgeUI.role = role;
                     BridgeUI.setViewManagerState(role);
                     UI.getCurrent().getNavigator().navigateTo(MainView.name);
                 } else if (s.isAuthenticated()) {

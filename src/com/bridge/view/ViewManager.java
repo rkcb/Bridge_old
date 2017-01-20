@@ -56,16 +56,6 @@ public class ViewManager {
         return role;
     }
 
-    // public boolean navigationPermitted(String viewName) {
-    // return permittedViews.contains(viewName);
-    // // if (role.matches("anon")) { // TODO: ready?
-    // // return true;
-    // // } else {
-    // // Subject s = SecurityUtils.getSubject();
-    // // return s.hasRole(role);
-    // // }
-    // }
-
     protected void addView(String viewName, View view) {
         navigator.addView(viewName, view);
         permittedViews.add(viewName);
@@ -78,6 +68,7 @@ public class ViewManager {
      */
 
     public void addViews(String role) {
+        this.role = role;
         removeViews();
         BridgeUI.o("addviews with role: " + role);
         int index = roles.indexOf(role);

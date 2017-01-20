@@ -40,33 +40,22 @@ public class OldCompetionDialog2 extends CompetionDialog {
      * editItems enables editing an existing tournament
      */
 
-    public void editItems(EntityItem<BridgeEvent> bei,
-            EntityItem<Tournament> ti) {
-
-        eventEditor.setItemSource(bei);
-        tourEditor.setItemSource(ti);
-
-        bridgeEventItem = bei;
-        tournamentItem = ti;
+    public void editItems(EntityItem<BridgeEvent> eventItem,
+            EntityItem<Tournament> tournamentItem) {
+        eventEditor.setItemSource(eventItem);
+        tourEditor.setItemSource(tournamentItem);
+        bridgeEventItem = eventItem;
+        this.tournamentItem = tournamentItem;
     }
 
     @Override
     protected void cancelClicked() {
         bridgeEventItem.discard();
-        // bridgeEventItem.commit();
         tournamentItem.discard();
-        // tournamentItem.commit();
-        // manager.updateBridgeEvent(bridgeEventItem.getEntity());
-
-        // editor.markCalendarDirty();
-
-        // editor.closeEditorWindow();
-
         finishEditing();
     }
 
     protected void deleteClicked() {
-
         manager.removeTournament(tournamentItem.getItemId());
         calendar.markAsDirty();
         finishEditing();
@@ -77,8 +66,12 @@ public class OldCompetionDialog2 extends CompetionDialog {
         if (tourEditor.areFieldsValid()
                 && eventEditor.areTournamentFieldsValid()) {
 
+            if (eventEditor.isOwnerModified()) {
+                Object eid = bridgeEventItem.getItemId();
+                Object tid = tournamentItem.getItemId();
+                manager.changeEventOwner(tid, eid, eventEditor.getOwnerId());
+            }
             boolean valid = true;
-
             tourEditor.commit();
 
             try {
@@ -87,17 +80,10 @@ public class OldCompetionDialog2 extends CompetionDialog {
                 valid = false;
             }
 
-            // C<BridgeEvent> es = new C<BridgeEvent>(BridgeEvent.class);
-            // BridgeEvent e = es.get(bridgeEventItem.getItemId());
-            // BridgeUI.o("Caption after: "+e.getCaption());
-            //
             if (valid) {
                 finishEditing();
                 calendar.markAsDirty();
             }
-
-            // editor.closeEditorWindow();
-            // editor.markCalendarDirty();
 
         } else {
             Notification n = new Notification("Check the required fields",

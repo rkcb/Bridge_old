@@ -150,7 +150,7 @@ public class ClubEventsView extends EVerticalLayout implements View {
     @Override
     public void enter(ViewChangeEvent event) {
         addComponents(mainMenu, calendar.getCompositeCalendar());
-        calendar.refreshSelectedClub();
+        calendar.addSearchFilters();
         // TODO: event filter must be handled
         // if admin view filters H6 and user view other
     }

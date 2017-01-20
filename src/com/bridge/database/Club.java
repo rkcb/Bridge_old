@@ -56,6 +56,7 @@ public class Club implements Serializable {
     private String town = new String("");
     private String founded = new String("");
     private Set<String> topics = new HashSet<>();
+    private boolean federation = false;
 
     /*
      * if club is not active it does not have club admins or members; setting
@@ -81,9 +82,10 @@ public class Club implements Serializable {
     public Club() {
     }
 
-    public Club(String name, String town) {
+    public Club(String name, String town, boolean isFederation) {
         this.name = name;
         this.town = town;
+        federation = isFederation;
     }
 
     @Override
@@ -270,6 +272,14 @@ public class Club implements Serializable {
 
     public void setTopics(Set<String> topics) {
         this.topics = topics;
+    }
+
+    public boolean isFederation() {
+        return federation;
+    }
+
+    public void setFederation(boolean federation) {
+        this.federation = federation;
     }
 
 }
