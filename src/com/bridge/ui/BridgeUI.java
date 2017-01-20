@@ -53,7 +53,7 @@ public class BridgeUI extends UI {
 
         // must be first because there are no users yet!
 
-        role = basic;
+        role = admin;
         if (SecurityUtils.getSubject().hasRole(role)) {
             setViewManagerState(role);
             navigator.navigateTo(UserCompetionsView.name);

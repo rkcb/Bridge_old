@@ -110,12 +110,13 @@ public class PersonalDataView extends EVerticalLayout implements View {
         optionGroup.setItemCaptionMode(ItemCaptionMode.ITEM);
 
         addMenuItems();
-        optionGroup.setCaption(null);
 
         User u = BridgeUI.user.getCurrentUser();
         Player p = u.getPlayer();
         fgUser = new FieldGroup(users.item(u.getId()));
         fgUser.bindMemberFields(this);
+        optionGroup.setValue(u.getTopRole().getId());
+
         if (p != null) {
             fgPlayer = new FieldGroup(players.item(p.getId()));
             fgPlayer.buildAndBindMemberFields(this);
