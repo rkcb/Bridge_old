@@ -126,7 +126,7 @@ public class UploadView extends EVerticalLayout implements View {
             @Override
             protected void handleFile(File file, String fileName,
                     String mimeType, long length) {
-                if (length <= 300000) {
+                if (length <= 1000000) {
                     try {
                         if (pbnc.size() > 10) {
                             table.setPageLength(10);
@@ -154,7 +154,7 @@ public class UploadView extends EVerticalLayout implements View {
                                     f.hasMP(), l, tools.posMpsEarned()));
                         } else {
                             Notification.show(
-                                    "The file id not contain TotalScoreTable",
+                                    "The file did not contain TotalScoreTable",
                                     Type.ERROR_MESSAGE);
                         }
 
@@ -163,7 +163,7 @@ public class UploadView extends EVerticalLayout implements View {
                     } catch (IOException e) {
                     }
                 } else {
-                    Notification.show("Too big file (>300kB)",
+                    Notification.show("Too big file (>1000kB)",
                             Type.ERROR_MESSAGE);
                 }
             }
@@ -204,7 +204,7 @@ public class UploadView extends EVerticalLayout implements View {
                         Double addedMPs = f.getFedCodeToMps().get(key);
                         players.set(players.at(0).getId(), "masterPoints",
                                 oldPts - f.getFedCodeToMps().get(key));
-                        // commit master point update messsage
+                        // commit master point update message
                         messages.add(new MasterPointMessage(players.get(0),
                                 -addedMPs, committer, ""));
                         // refresh MPRegistryView container
@@ -439,6 +439,7 @@ public class UploadView extends EVerticalLayout implements View {
                 }
 
                 ts.set(tourId, "pbnFiles", list);
+                // update json strings of the corresponding pbn files
 
                 BridgeUI.o("ts size after commit and refresh in done "
                         + ts.get(tourId).getPbnFiles().size());
@@ -510,7 +511,6 @@ public class UploadView extends EVerticalLayout implements View {
     @Override
     public void enter(ViewChangeEvent event) {
         addComponents(mainMenu, calendar.getCompositeCalendar());
-
     }
 
 }

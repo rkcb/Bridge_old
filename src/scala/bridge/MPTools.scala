@@ -6,7 +6,7 @@ import scala.collection.JavaConversions._
 /***
  * MPTools extracts federation codes and master points from the PbnEvent which 
  * must contain pbn TotalScoreTable
- * */
+ * */ 
 
 class MPTools(ev: PbnEvent) {
   

@@ -101,7 +101,11 @@
 		<!-- inject css dynamically -->	
 	
 		<dependency org="org.vaadin.addons" name="expandingtextarea" rev="1.2.0" />
-			
+		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <dependency org="com.google.code.gson" name="gson" rev="2.8.0"/>
+		<!-- https://mvnrepository.com/artifact/org.parboiled/parboiled-java -->
+		<dependency org="org.parboiled" name="parboiled-java" rev="1.1.8"/>
+		
 		
 		
 	</dependencies>
