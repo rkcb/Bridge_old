@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.parboiled.errors.ParseError;
+import org.parboiled.support.ParsingResult;
 import org.vaadin.easyuploads.MultiFileUpload;
 
 import com.bridge.calendar.WhiteCalendar;
@@ -26,6 +28,8 @@ import com.bridge.ui.BridgeUI;
 import com.bridge.ui.ETable;
 import com.bridge.ui.EVerticalLayout;
 import com.bridge.ui.MainMenu;
+import com.pbn.ast.Pbn;
+import com.pbn.tools.Tools;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.navigator.View;
@@ -120,6 +124,26 @@ public class UploadView extends EVerticalLayout implements View {
 
     }
 
+    private String pbnToString(List<String> pbn) {
+        StringBuilder builder = new StringBuilder("");
+        for (String line : pbn) {
+            builder.append(line + "\r\n");
+        }
+        return builder.toString();
+    }
+
+    private String errorMessage(ParsingResult<Pbn> result, String fileName) {
+        ParseError error = result.parseErrors.get(0);
+        int s = error.getStartIndex();
+        int line = error.getInputBuffer().getPosition(s).line;
+        StringBuilder builder = new StringBuilder("");
+        builder.append("The result file ***" + fileName
+                + "*** contains an error at line " + line + " and column "
+                + error.getInputBuffer().getPosition(s).column
+                + " The erroneous text may occur earlier in the line.");
+        return builder.toString();
+    }
+
     protected void addFileUpload() {
 
         up = new MultiFileUpload() {
@@ -131,34 +155,46 @@ public class UploadView extends EVerticalLayout implements View {
                         if (pbnc.size() > 10) {
                             table.setPageLength(10);
                         }
-                        BufferedReader br = new BufferedReader(
+                        BufferedReader breader = new BufferedReader(
                                 new InputStreamReader(new FileInputStream(file),
                                         "iso-8859-1"));
                         boolean end = false;
-                        List<String> l = new ArrayList<>();
+                        List<String> pbn = new ArrayList<>();
                         while (!end) {
-                            String line = br.readLine();
+                            String line = breader.readLine();
                             if (line != null) {
-                                l.add(line);
+                                pbn.add(line);
                             }
                             end = line == null;
                         }
 
                         // TODO: pbn file syntax check!
-                        // this is accomplished in the pbnparser project
-                        TableFactory f = new TableFactory(l, true);
-                        if (f.totalScoreSupported()) {
-                            MPTools tools = new MPTools(f.events().head());
-                            @SuppressWarnings("unused")
-                            Object id = pbnc.addBean(new PbnFile(fileName,
-                                    f.hasMP(), l, tools.posMpsEarned()));
-                        } else {
-                            Notification.show(
-                                    "The file did not contain TotalScoreTable",
-                                    Type.ERROR_MESSAGE);
-                        }
+                        String input = pbnToString(pbn);
+                        ParsingResult<Pbn> result = Tools.getPbnResult(input);
 
-                        br.close();
+                        if (!result.matched) {
+                            Notification.show(errorMessage(result, fileName),
+                                    Type.ERROR_MESSAGE);
+
+                        } else {
+
+                            // this is accomplished in the pbnparser project
+                            TableFactory factory = new TableFactory(pbn, true);
+                            if (factory.totalScoreSupported()) {
+                                MPTools tools = new MPTools(
+                                        factory.events().head());
+                                @SuppressWarnings("unused")
+                                Object id = pbnc.addBean(
+                                        new PbnFile(fileName, factory.hasMP(),
+                                                pbn, tools.posMpsEarned(), ""));
+                            } else {
+                                Notification.show(
+                                        "The file did not contain TotalScoreTable",
+                                        Type.ERROR_MESSAGE);
+                            }
+
+                        }
+                        breader.close();
                     } catch (FileNotFoundException e) {
                     } catch (IOException e) {
                     }

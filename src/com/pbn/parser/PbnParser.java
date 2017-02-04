@@ -97,7 +97,6 @@ public class PbnParser extends BaseParser<Pbn> {
 
     protected boolean isDealValid(LinkedList<LinkedList<String>> hands) {
         if (hands.size() == 4) {
-
             return true;
         } else {
             return false;
@@ -365,7 +364,8 @@ public class PbnParser extends BaseParser<Pbn> {
 
     protected Rule PbnObject() {
         // push a tag object
-        return Sequence(LBR, NameToken(), push(PbnObject.pbnTag(match())), LQT,
+        return Sequence(LBR, TestNot(PreTags()), NameToken(),
+                push(PbnObject.pbnTag(match())), LQT,
                 FirstOf(Value(), Section()));
     }
 
@@ -393,6 +393,11 @@ public class PbnParser extends BaseParser<Pbn> {
         return Sequence("Deal", LQT, Deal());
     }
 
+    protected Rule PreTags() {
+        return FirstOf("Deal", "Vulnerable", "Dealer", "Date", "Board",
+                TableName());
+    }
+
     protected Rule PredefinedValue() {
         return Sequence(LBR, FirstOf(PbnDeal(), PbnVulnerable(), PbnDealer(),
                 PbnDate(), PbnBoard()), ValueEnd());
@@ -401,11 +406,15 @@ public class PbnParser extends BaseParser<Pbn> {
     protected Rule Event() {
         Var<Event> ev = new Var<>(new Event());
         return Sequence(
+
                 OneOrMore(FirstOf(PREVALS, PRETABLES, PbnObject()),
                         ev.get().add((PbnObject) pop())),
                 push(ev.get()), EmptyLine());
     }
 
+    /***
+     * Events parses pbn string to Events; the start rule
+     */
     public Rule Events() {
         Var<Events> evs = new Var<>(new Events());
         return Sequence(Optional(Escapes()),

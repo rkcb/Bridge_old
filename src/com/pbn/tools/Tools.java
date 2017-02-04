@@ -4,7 +4,10 @@ import org.parboiled.Parboiled;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.pbn.ast.Event;
+import com.pbn.ast.Events;
 import com.pbn.ast.Pbn;
 import com.pbn.parser.PbnParser;
 import com.pbn.pbnjson.JsonEvent;
@@ -15,6 +18,7 @@ import com.pbn.pbnjson.JsonTotalScoreTable;
 public class Tools {
 
     static private PbnParser parser = Parboiled.createParser(PbnParser.class);
+    static private Gson gson = new GsonBuilder().create();
 
     /***
      * Event2JsonEvent copy Event information to JsonEvent
@@ -98,11 +102,16 @@ public class Tools {
      *
      * @return ParsingResult<PBN> which contains possible errors
      */
-    public ParsingResult<Pbn> getResult(String pbn) {
+    public static ParsingResult<Pbn> getPbnResult(String pbn) {
         ReportingParseRunner<Pbn> runner = new ReportingParseRunner<>(
                 parser.Events());
         ParsingResult<Pbn> result = runner.run(pbn);
         return result;
+    }
+
+    public static String getJson(ParsingResult<Pbn> result) {
+        Events events = (Events) result.resultValue;
+        return "";
     }
 
 }

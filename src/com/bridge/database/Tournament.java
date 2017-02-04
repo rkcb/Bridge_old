@@ -50,9 +50,6 @@ public class Tournament implements Serializable {
     @ElementCollection
     private List<PbnFile> pbnFiles = new ArrayList<>();
 
-    @ElementCollection
-    private List<String> jsons = new ArrayList<>();
-
     @NotEmpty
     @ElementCollection
     private Set<Player> organizers = new HashSet<>();
@@ -199,14 +196,6 @@ public class Tournament implements Serializable {
 
     public void setTeams(Set<Team> teams) {
         this.teams = teams;
-    }
-
-    public List<String> getJsons() {
-        return jsons;
-    }
-
-    public void setJsons(List<String> jsons) {
-        this.jsons = jsons;
     }
 
 }

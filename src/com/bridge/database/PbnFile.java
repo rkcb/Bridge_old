@@ -16,7 +16,7 @@ public class PbnFile implements Serializable {
                                           // main result file
                                           // note that not all tours has mp
                                           // point column
-
+    private String json; // the json for JsonEvents
     // maps fed code to master points earned
     // only nonzero cases are stored
     // this is used e.g. when the pbn file is removed
@@ -40,11 +40,12 @@ public class PbnFile implements Serializable {
     }
 
     public PbnFile(String fileName, Boolean mps, List<String> lines,
-            Map<String, Double> map) {
+            Map<String, Double> map, String json) {
         masterPoints = mps;
         name = fileName;
         fileLines = lines;
         fedCodeToMps = map;
+        this.json = json;
     }
 
     public PbnFile(String fileName, Boolean mps, List<String> lines,
@@ -98,6 +99,14 @@ public class PbnFile implements Serializable {
 
     public void setFinalResults(Boolean finalResults) {
         this.finalResults = finalResults;
+    }
+
+    public String getJson() {
+        return json;
+    }
+
+    public void setJson(String json) {
+        this.json = json;
     }
 
 }
