@@ -45,8 +45,7 @@ public class SampleStuff {
         // createSamplePlayers(0);
         createUser("basic", "basic", 0);
         createUser("clubadmin", "clubadmin", 0);
-        createUser("admin", "admin", 1);
-        createUser("admin", "admin", 1);
+        createUser("admin", "admin", 0);
         createUser("admin2", "admin", 1);
         // createEscobar("admin2", "admin");
         // createFromPbns("team.pbn");
@@ -240,15 +239,13 @@ public class SampleStuff {
      * createBridgeEvent creates a calendar event for a club NOTE: clubs must be
      * nonempty
      */
-    private static void createBridgeEvent() {
+    public static void createBridgeEvent() {
         C<BridgeEvent> events = new C<>(BridgeEvent.class);
         if (events.size() == 0) {
-            BridgeUI.o(
-                    "Created a calendar event for " + clubs.at(0).toString());
             Calendar c = Calendar.getInstance();
             Object id = events.add(new BridgeEvent("Caption", "description",
                     c.getTime(), c.getTime()));
-            Club club = clubs.at(0); // BridgeUI.user.getCurrentClub();
+            Club club = clubs.at(0);
 
             events.set(id, "owner", club);
             events.set(id, "registration", true);

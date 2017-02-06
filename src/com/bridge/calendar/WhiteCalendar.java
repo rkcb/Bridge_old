@@ -276,9 +276,13 @@ public class WhiteCalendar extends Calendar {
         calendar.clubId = BridgeUI.user.getCurrentClubId();
         String role = BridgeUI.getCurrentRole();
 
-        if (role.matches("clubadmin|admin")
-                && BridgeUI.user.hasRole("clubadmin|admin")) {
-            if (!BridgeUI.getCurrentRole().matches("clubadmin")) {
+        BridgeUI.o("role:" + role);
+
+        boolean hasClubAdmin = BridgeUI.user.hasRole("clubadmin");
+        boolean hasAdmin = BridgeUI.user.hasRole("admin");
+
+        if (role.matches("clubadmin|admin") && (hasClubAdmin || hasAdmin)) {
+            if (!hasAdmin) {
                 calendar.hideSearchMenu();
             }
         } else {

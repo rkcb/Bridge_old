@@ -140,7 +140,7 @@ public class UploadView extends EVerticalLayout implements View {
         builder.append("The result file ***" + fileName
                 + "*** contains an error at line " + line + " and column "
                 + error.getInputBuffer().getPosition(s).column
-                + " The erroneous text may occur earlier in the line.");
+                + ". The erroneous text may occur earlier in the line.");
         return builder.toString();
     }
 
@@ -159,34 +159,37 @@ public class UploadView extends EVerticalLayout implements View {
                                 new InputStreamReader(new FileInputStream(file),
                                         "iso-8859-1"));
                         boolean end = false;
-                        List<String> pbn = new ArrayList<>();
+                        List<String> pbnList = new ArrayList<>();
+                        StringBuilder builder = new StringBuilder("");
+                        // build a pbn list and string
                         while (!end) {
                             String line = breader.readLine();
                             if (line != null) {
-                                pbn.add(line);
+                                pbnList.add(line);
+                                builder.append(line + "\r\n");
                             }
                             end = line == null;
                         }
 
                         // TODO: pbn file syntax check!
-                        String input = pbnToString(pbn);
-                        ParsingResult<Pbn> result = Tools.getPbnResult(input);
+                        ParsingResult<Pbn> result = Tools
+                                .getPbnResult(builder.toString());
 
                         if (!result.matched) {
                             Notification.show(errorMessage(result, fileName),
                                     Type.ERROR_MESSAGE);
-
                         } else {
-
+                            String json = Tools.toJson(result);
                             // this is accomplished in the pbnparser project
-                            TableFactory factory = new TableFactory(pbn, true);
+                            TableFactory factory = new TableFactory(pbnList,
+                                    true);
                             if (factory.totalScoreSupported()) {
                                 MPTools tools = new MPTools(
                                         factory.events().head());
                                 @SuppressWarnings("unused")
-                                Object id = pbnc.addBean(
-                                        new PbnFile(fileName, factory.hasMP(),
-                                                pbn, tools.posMpsEarned(), ""));
+                                Object id = pbnc.addBean(new PbnFile(fileName,
+                                        factory.hasMP(), pbnList,
+                                        tools.posMpsEarned(), json));
                             } else {
                                 Notification.show(
                                         "The file did not contain TotalScoreTable",

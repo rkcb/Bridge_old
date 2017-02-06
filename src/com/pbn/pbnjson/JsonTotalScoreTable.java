@@ -6,7 +6,7 @@ import java.util.List;
 
 public class JsonTotalScoreTable extends JsonTable {
 
-    private HashSet<String> numberColumns;
+    private transient HashSet<String> numberColumns;
 
     public JsonTotalScoreTable(List<String> header, List<List<String>> rows) {
         super(header, rows);

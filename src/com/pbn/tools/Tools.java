@@ -1,11 +1,18 @@
 package com.pbn.tools;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.pbn.ast.Event;
 import com.pbn.ast.Events;
 import com.pbn.ast.Pbn;
@@ -100,6 +107,9 @@ public class Tools {
     /***
      * getResult parses the PBN string
      *
+     * @param pbn
+     *            PBN file as a string
+     *
      * @return ParsingResult<PBN> which contains possible errors
      */
     public static ParsingResult<Pbn> getPbnResult(String pbn) {
@@ -109,9 +119,43 @@ public class Tools {
         return result;
     }
 
-    public static String getJson(ParsingResult<Pbn> result) {
+    /***
+     * getJson serializes List<Event> of the parsing result to Json string using
+     * Gson
+     */
+    public static String toJson(ParsingResult<Pbn> result) {
         Events events = (Events) result.resultValue;
-        return "";
+        List<JsonEvent> jevents = events.events().stream()
+                .map(e -> event2JsonEvent(e)).collect(Collectors.toList());
+
+        return gson.toJson(jevents);
+    }
+
+    public static LinkedList<JsonEvent> fromJson(String json) {
+        JsonParser jsonParser = new JsonParser();
+        JsonArray jarray = jsonParser.parse(json).getAsJsonArray();
+        LinkedList<JsonEvent> jsonEvents = new LinkedList<>();
+        // this deserialization is a recommended way by Gson documentation
+        for (JsonElement e : jarray) {
+            jsonEvents.add(gson.fromJson(e, JsonEvent.class));
+        }
+
+        return jsonEvents;
+    }
+
+    /***
+     * pbnStringToJson conterts pbn to json string by first checking the
+     * validity of pbn and then converting the pbn to json
+     *
+     * @return json se
+     */
+    public static String pbnToJson(String pbn) {
+        if (pbn == null || pbn.trim().isEmpty()) {
+            return "";
+        }
+
+        ParsingResult<Pbn> results = getPbnResult(pbn);
+        return results.matched ? toJson(results) : "";
     }
 
 }
