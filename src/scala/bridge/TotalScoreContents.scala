@@ -20,7 +20,6 @@ class TotalScoreContents (events: List[PbnEvent]){
 	   } else List()
 	}
 	
-	
 	def data(): Array[Array[String]] = {
 	   if (!events.isEmpty) {
 	      val bh = bHeader

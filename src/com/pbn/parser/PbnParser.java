@@ -71,15 +71,6 @@ public class PbnParser extends BaseParser<Pbn> {
      * isSuit checks for rank duplicates
      */
     protected boolean isSuit(String s) {
-
-        if (s.isEmpty()) {
-            return true;
-        }
-
-        if (s.length() > 13) {
-            return false;
-        }
-
         s.toUpperCase(Locale.ROOT);
         return s.chars().distinct().count() == s.length();
     }
@@ -104,7 +95,7 @@ public class PbnParser extends BaseParser<Pbn> {
 
     }
 
-    protected Rule Deal() {
+    protected Rule NonEmptyDeal() {
         Var<LinkedList<LinkedList<String>>> hands = new Var<>(
                 new LinkedList<>());
         StringVar dir = new StringVar();
@@ -113,8 +104,16 @@ public class PbnParser extends BaseParser<Pbn> {
                 push(PbnObject.pbnDeal(dir.get(), hands.get())));
     }
 
+    protected Rule EmptyDeal() {
+        return Sequence("", push(PbnObject.pbnDeal(null, null)));
+    }
+
+    protected Rule Deal() {
+        return FirstOf(NonEmptyDeal(), EmptyDeal());
+    }
+
     protected Rule VulVals() {
-        return FirstOf("None", "NS", "EW", "All");
+        return FirstOf("None", "NS", "EW", "All", "");
     }
 
     protected Rule VulExtraVals() {
@@ -393,6 +392,7 @@ public class PbnParser extends BaseParser<Pbn> {
         return Sequence("Deal", LQT, Deal());
     }
 
+    /* MUST exist to catch invalid prevalues for example */
     protected Rule PreTags() {
         return FirstOf("Deal", "Vulnerable", "Dealer", "Date", "Board",
                 TableName());
@@ -406,15 +406,11 @@ public class PbnParser extends BaseParser<Pbn> {
     protected Rule Event() {
         Var<Event> ev = new Var<>(new Event());
         return Sequence(
-
                 OneOrMore(FirstOf(PREVALS, PRETABLES, PbnObject()),
                         ev.get().add((PbnObject) pop())),
                 push(ev.get()), EmptyLine());
     }
 
-    /***
-     * Events parses pbn string to Events; the start rule
-     */
     public Rule Events() {
         Var<Events> evs = new Var<>(new Events());
         return Sequence(Optional(Escapes()),
