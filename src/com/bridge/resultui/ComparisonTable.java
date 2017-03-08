@@ -67,8 +67,6 @@ public class ComparisonTable extends Table {
         }
     }
 
-    // public void markSelected()
-
     public void setData(String board, String playerId) {
 
         container.removeAllItems();

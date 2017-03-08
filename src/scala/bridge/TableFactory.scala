@@ -8,8 +8,6 @@ import java.lang.Float
 //import com.vaadin.ui.Notification
 //import com.vaadin.data.util.IndexedContainer
 import scala.bridge._
-//import com.vaadin.data.Property
-//import com.vaadin.data.Item
 
 
 /***

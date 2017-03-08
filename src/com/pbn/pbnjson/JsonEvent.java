@@ -3,7 +3,7 @@ package com.pbn.pbnjson;
 import java.util.LinkedList;
 
 public class JsonEvent {
-
+    // See PBN v.2 specification
     private String event;
     private String site;
     private String date;
@@ -18,12 +18,40 @@ public class JsonEvent {
     private String declarer;
     private String contract;
     private String result;
-    private String competion;
+    private String competition;
+    private String optimumScore;
+    private String optimumContract;
 
     private LinkedList<LinkedList<String>> deal; // north, east, south, west
     private JsonTotalScoreTable totalScoreTable;
     private JsonScoreTable scoreTable;
     private JsonOptimumResultTable optimumResultTable;
+
+    /**
+     * initialize builds help variables in totalScoreTable and scoreTable if
+     * they exist
+     */
+    public void initialize() {
+        if (competition != null && scoreTable != null
+                && totalScoreTable != null) {
+            scoreTable.initialize(competition);
+            totalScoreTable.initialize(competition);
+        }
+    }
+
+    /***
+     * initialize copy
+     *
+     * @param to
+     *            copy to this
+     * @param from
+     *            copy to this
+     */
+    public static void initialize(JsonEvent to, JsonEvent from) {
+        if (to != null && from != null && from.scoreTable != null) {
+            JsonScoreTable.initialize(to.getScoreTable(), from.getScoreTable());
+        }
+    }
 
     public String getEvent() {
         return event;
@@ -145,12 +173,28 @@ public class JsonEvent {
         this.result = result;
     }
 
-    public String getCompetion() {
-        return competion;
+    public String getCompetition() {
+        return competition;
     }
 
-    public void setCompetion(String competion) {
-        this.competion = competion;
+    public void setCompetition(String competition) {
+        this.competition = competition;
+    }
+
+    public String getOptimumScore() {
+        return optimumScore;
+    }
+
+    public void setOptimumScore(String optimumScore) {
+        this.optimumScore = optimumScore;
+    }
+
+    public String getOptimumContract() {
+        return optimumContract;
+    }
+
+    public void setOptimumContract(String optimumContract) {
+        this.optimumContract = optimumContract;
     }
 
     public JsonTotalScoreTable getTotalScoreTable() {
@@ -176,6 +220,38 @@ public class JsonEvent {
     public void setOptimumResultTable(
             JsonOptimumResultTable optimumResultTable) {
         this.optimumResultTable = optimumResultTable;
+    }
+
+    /***
+     * absDouble parse double
+     *
+     * @param o
+     *            any Double
+     *
+     * @return parsed absolute value of double; return -1 if parsing fails
+     */
+    private double absDouble(Object o) {
+        double d = -1;
+        try {
+            d = (Double) o;
+            d = Math.abs(d);
+        } catch (Exception e) {
+        }
+        return d;
+    }
+
+    /***
+     * maxIMP
+     *
+     * @return max imp in this event and -1 if not possible
+     */
+    public double maxIMP() {
+        if (scoreTable != null && scoreTable.header != null
+                && scoreTable.header.indexOf("IMP_EW") >= 0) {
+            return scoreTable.column("IMP_EW").stream()
+                    .mapToDouble(i -> absDouble(i)).max().orElse(-1);
+        }
+        return -1;
     }
 
 }

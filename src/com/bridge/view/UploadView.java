@@ -121,7 +121,6 @@ public class UploadView extends EVerticalLayout implements View {
                 window.center();
             }
         });
-
     }
 
     private String pbnToString(List<String> pbn) {
