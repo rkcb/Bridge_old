@@ -83,6 +83,16 @@ public class JsonEvents {
     }
 
     /***
+     * masterpointRegistry
+     *
+     * @return mapping from federation code to earned master points
+     */
+    public HashMap<Object, Double> masterpointRegistry() {
+        return hasMasterPoints() ? totalScoreTable().getMasterPointRegistry()
+                : null;
+    }
+
+    /***
      * competion shows competition type
      *
      * @return "Individuals", "Pairs", "Teams" or ""

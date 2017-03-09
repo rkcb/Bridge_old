@@ -21,7 +21,7 @@ public class PbnFile implements Serializable {
     // only nonzero cases are stored
     // this is used e.g. when the pbn file is removed
     // and MP registry is updated accordingly
-    private Map<String, Double> fedCodeToMps = new HashMap<>();
+    private HashMap<Object, Double> fedCodeToMps = new HashMap<>();
 
     private List<String> fileLines = new ArrayList<>(0);
 
@@ -40,7 +40,7 @@ public class PbnFile implements Serializable {
     }
 
     public PbnFile(String fileName, Boolean mps, List<String> lines,
-            Map<String, Double> map, String json) {
+            HashMap<Object, Double> map, String json) {
         masterPoints = mps;
         name = fileName;
         fileLines = lines;
@@ -49,7 +49,7 @@ public class PbnFile implements Serializable {
     }
 
     public PbnFile(String fileName, Boolean mps, List<String> lines,
-            Map<String, Double> map, boolean isFinalResults) {
+            HashMap<Object, Double> map, boolean isFinalResults) {
         masterPoints = mps;
         name = fileName;
         fileLines = lines;
@@ -85,11 +85,11 @@ public class PbnFile implements Serializable {
         this.masterPoints = masterPoints;
     }
 
-    public Map<String, Double> getFedCodeToMps() {
+    public Map<Object, Double> getFedCodeToMps() {
         return fedCodeToMps;
     }
 
-    public void setFedCodeToMps(Map<String, Double> fedCodeToMps) {
+    public void setFedCodeToMps(HashMap<Object, Double> fedCodeToMps) {
         this.fedCodeToMps = fedCodeToMps;
     }
 

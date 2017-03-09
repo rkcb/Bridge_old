@@ -29,6 +29,7 @@ import com.bridge.ui.ETable;
 import com.bridge.ui.EVerticalLayout;
 import com.bridge.ui.MainMenu;
 import com.pbn.ast.Pbn;
+import com.pbn.pbnjson.JsonEvents;
 import com.pbn.tools.Tools;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.BeanItemContainer;
@@ -123,13 +124,13 @@ public class UploadView extends EVerticalLayout implements View {
         });
     }
 
-    private String pbnToString(List<String> pbn) {
-        StringBuilder builder = new StringBuilder("");
-        for (String line : pbn) {
-            builder.append(line + "\r\n");
-        }
-        return builder.toString();
-    }
+    // private String pbnToString(List<String> pbn) {
+    // StringBuilder builder = new StringBuilder("");
+    // for (String line : pbn) {
+    // builder.append(line + "\r\n");
+    // }
+    // return builder.toString();
+    // }
 
     private String errorMessage(ParsingResult<Pbn> result, String fileName) {
         ParseError error = result.parseErrors.get(0);
@@ -170,30 +171,40 @@ public class UploadView extends EVerticalLayout implements View {
                             end = line == null;
                         }
 
-                        // TODO: pbn file syntax check!
                         ParsingResult<Pbn> result = Tools
                                 .getPbnResult(builder.toString());
-
+                        // PBN syntax check
                         if (!result.matched) {
                             Notification.show(errorMessage(result, fileName),
                                     Type.ERROR_MESSAGE);
                         } else {
                             String json = Tools.toJson(result);
+                            JsonEvents jevents = new JsonEvents(json);
                             // this is accomplished in the pbnparser project
-                            TableFactory factory = new TableFactory(pbnList,
-                                    true);
-                            if (factory.totalScoreSupported()) {
-                                MPTools tools = new MPTools(
-                                        factory.events().head());
-                                @SuppressWarnings("unused")
-                                Object id = pbnc.addBean(new PbnFile(fileName,
-                                        factory.hasMP(), pbnList,
-                                        tools.posMpsEarned(), json));
+                            // TableFactory factory = new TableFactory(pbnList,
+                            // true);
+                            if (jevents.totalScoreTableExists()) {
+                                pbnc.addBean(new PbnFile(fileName,
+                                        jevents.hasMasterPoints(), pbnList,
+                                        jevents.masterpointRegistry(), json));
                             } else {
                                 Notification.show(
                                         "The file did not contain TotalScoreTable",
                                         Type.ERROR_MESSAGE);
                             }
+
+                            // if (factory.totalScoreSupported()) {
+                            // MPTools tools = new MPTools(
+                            // factory.events().head());
+                            // @SuppressWarnings("unused")
+                            // Object id = pbnc.addBean(new PbnFile(fileName,
+                            // factory.hasMP(), pbnList,
+                            // tools.posMpsEarned(), json));
+                            // } else {
+                            // Notification.show(
+                            // "The file did not contain TotalScoreTable",
+                            // Type.ERROR_MESSAGE);
+                            // }
 
                         }
                         breader.close();
@@ -232,7 +243,7 @@ public class UploadView extends EVerticalLayout implements View {
         for (PbnFile f : oldFiles) {
             if (f.getMasterPoints() && !pbnc.getItemIds().contains(f)
                     && f.getFinalResults()) {
-                for (String key : f.getFedCodeToMps().keySet()) {
+                for (Object key : f.getFedCodeToMps().keySet()) {
                     // federation code is unique and must exist
                     Filter fil = players.filterEq("federationCode", key);
                     // update master points
@@ -258,7 +269,7 @@ public class UploadView extends EVerticalLayout implements View {
         for (PbnFile f : pbnc.getItemIds()) {
             if (f.getMasterPoints() && !oldFiles.contains(f)
                     && f.getFinalResults()) {
-                for (String key : f.getFedCodeToMps().keySet()) {
+                for (Object key : f.getFedCodeToMps().keySet()) {
                     // federation code is unique and must exist
                     Filter fil = players.filterEq("federationCode", key);
                     if (players.size() == 1) {
