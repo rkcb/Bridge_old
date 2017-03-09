@@ -1,5 +1,6 @@
 package com.bridge.view;
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import com.bridge.database.User;
@@ -15,15 +16,13 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
-import scala.actors.threadpool.Arrays;
-
 @SuppressWarnings("serial")
 public class UserManagementView extends VerticalLayout implements View {
 
     static final String name = "/user/management/";
     public final static String[] rls = new String[] { "anon" };
     @SuppressWarnings("unchecked")
-    public final static HashSet<String> roles = new HashSet<String>(
+    public final static HashSet<String> roles = new HashSet<>(
             Arrays.asList(rls));
     protected PersonalInformation pei;
     protected PlayerInformation pli;

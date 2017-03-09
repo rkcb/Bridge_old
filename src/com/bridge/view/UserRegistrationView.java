@@ -1,5 +1,6 @@
 package com.bridge.view;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -32,15 +33,13 @@ import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-import scala.actors.threadpool.Arrays;
-
 @SuppressWarnings("serial")
 public class UserRegistrationView extends UserManagementView {
 
     public static final String name = "/user/registration";
     public final static String[] rls = new String[] { "anon" };
     @SuppressWarnings("unchecked")
-    public final static HashSet<String> roles = new HashSet<String>(
+    public final static HashSet<String> roles = new HashSet<>(
             Arrays.asList(rls));
 
     static final String usernameQuery = "SELECT username FROM USERS WHERE username = ?";

@@ -1,14 +1,13 @@
 package com.bridge.view;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.bridge.ui.BridgeUI;
 import com.bridge.ui.MainMenu;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
-
-import scala.actors.threadpool.Arrays;
 
 /***
  * ViewManager checks that each view is only shown if user is authorized to use
@@ -28,7 +27,7 @@ public class ViewManager {
     protected Navigator navigator;
     protected final String[] r = new String[] { anon, basic, clubadmin, admin };
     @SuppressWarnings("unchecked")
-    protected final ArrayList<String> roles = new ArrayList<String>(
+    protected final ArrayList<String> roles = new ArrayList<>(
             Arrays.asList(r));
     protected List<String> permittedViews = new ArrayList<>();
 

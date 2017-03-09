@@ -21,6 +21,7 @@ public class TestView extends EVerticalLayout implements View {
         JsonEvents events = new JsonEvents(Tools.rawEvents("sm1"));
 
         JsonTotalScoreTable tst = events.totalScoreTable();
+
     }
 
     @Override
