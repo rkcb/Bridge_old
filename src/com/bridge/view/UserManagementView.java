@@ -21,7 +21,6 @@ public class UserManagementView extends VerticalLayout implements View {
 
     static final String name = "/user/management/";
     public final static String[] rls = new String[] { "anon" };
-    @SuppressWarnings("unchecked")
     public final static HashSet<String> roles = new HashSet<>(
             Arrays.asList(rls));
     protected PersonalInformation pei;

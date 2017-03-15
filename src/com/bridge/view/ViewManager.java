@@ -26,9 +26,7 @@ public class ViewManager {
     protected String role = anon;
     protected Navigator navigator;
     protected final String[] r = new String[] { anon, basic, clubadmin, admin };
-    @SuppressWarnings("unchecked")
-    protected final ArrayList<String> roles = new ArrayList<>(
-            Arrays.asList(r));
+    protected final ArrayList<String> roles = new ArrayList<>(Arrays.asList(r));
     protected List<String> permittedViews = new ArrayList<>();
 
     public ViewManager(Navigator n) {

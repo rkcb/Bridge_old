@@ -1,9 +1,9 @@
 package com.bridge.view;
 
+import com.bridge.resultui.TotalScoreTable2;
 import com.bridge.ui.EVerticalLayout;
 import com.bridge.ui.MainMenu;
 import com.pbn.pbnjson.JsonEvents;
-import com.pbn.pbnjson.JsonTotalScoreTable;
 import com.pbn.tools.Tools;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -12,6 +12,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 public class TestView extends EVerticalLayout implements View {
     public static final String name = "/test";
     private MainMenu mainMenu;
+    private TotalScoreTable2 tst;
     // private TableGrid tst = new TableGrid()
 
     public TestView(MainMenu mainMenu) {
@@ -20,13 +21,12 @@ public class TestView extends EVerticalLayout implements View {
         setSizeUndefined();
         JsonEvents events = new JsonEvents(Tools.rawEvents("sm1"));
 
-        JsonTotalScoreTable tst = events.totalScoreTable();
-
+        tst = new TotalScoreTable2(events);
     }
 
     @Override
     public void enter(ViewChangeEvent event) {
-        addComponents(mainMenu);
+        addComponents(mainMenu, tst);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.pbn.pbnjson;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -83,16 +84,6 @@ public class JsonEvents {
     }
 
     /***
-     * masterpointRegistry
-     *
-     * @return mapping from federation code to earned master points
-     */
-    public HashMap<Object, Double> masterpointRegistry() {
-        return hasMasterPoints() ? totalScoreTable().getMasterPointRegistry()
-                : null;
-    }
-
-    /***
      * competion shows competition type
      *
      * @return "Individuals", "Pairs", "Teams" or ""
@@ -138,6 +129,42 @@ public class JsonEvents {
                 .average();
 
         return d.orElse(-1);
+    }
+
+    /***
+     * masterPointsEarned computes how much this particular earned master
+     * points; see findMasterPoints()
+     *
+     * @param fedId
+     *            federation code
+     * @return master points for this player or null if mps not supported
+     */
+    public Double masterPointsEarned(String fedId) {
+        if (hasMasterPoints()) {
+            return totalScoreTable.getMasterPoints(fedId);
+        } else {
+            return null;
+        }
+    }
+
+    /***
+     * masterPointRegistry
+     *
+     * @return mapping from federation code to earned master points
+     */
+    public HashMap<Object, Double> masterPointRegistry() {
+        return hasMasterPoints() ? totalScoreTable().masterPointRegistry()
+                : null;
+    }
+
+    /***
+     * getPlayerFedCodes
+     *
+     * @return federation codes found in this table
+     */
+    public HashSet<Object> getPlayerFedCodes() {
+        return totalScoreTableExists() ? totalScoreTable.getPlayerFedCodes()
+                : new HashSet<>();
     }
 
     /***
@@ -223,7 +250,7 @@ public class JsonEvents {
     }
 
     public boolean totalScoreTableExists() {
-        return totalScoreTable != null;
+        return totalScoreTable() != null;
     }
 
     public boolean scoreTableExists() {

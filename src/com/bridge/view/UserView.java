@@ -30,7 +30,6 @@ public class UserView extends VerticalLayout implements View {
 
     public static final String name = "/user";
     public final static String[] rls = new String[] { "anon" };
-    @SuppressWarnings("unchecked")
     public final static HashSet<String> roles = new HashSet<>(
             Arrays.asList(rls));
 

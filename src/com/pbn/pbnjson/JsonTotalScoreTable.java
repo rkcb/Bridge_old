@@ -49,11 +49,11 @@ public class JsonTotalScoreTable extends JsonTable {
     }
 
     /***
-     * getMasterPointRegistry
+     * masterPointRegistry
      *
      * @return mapping from federation code to earned master points
      */
-    public HashMap<Object, Double> getMasterPointRegistry() {
+    public HashMap<Object, Double> masterPointRegistry() {
         return masterPoints;
     }
 

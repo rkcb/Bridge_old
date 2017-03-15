@@ -38,7 +38,6 @@ public class UserRegistrationView extends UserManagementView {
 
     public static final String name = "/user/registration";
     public final static String[] rls = new String[] { "anon" };
-    @SuppressWarnings("unchecked")
     public final static HashSet<String> roles = new HashSet<>(
             Arrays.asList(rls));
 
