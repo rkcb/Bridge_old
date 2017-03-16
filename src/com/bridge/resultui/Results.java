@@ -6,6 +6,7 @@ import com.bridge.database.C;
 import com.bridge.database.PbnFile;
 import com.bridge.database.Tournament;
 import com.bridge.ui.EVerticalLayout;
+import com.pbn.pbnjson.JsonEvents;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 
@@ -39,12 +40,14 @@ public class Results extends EVerticalLayout {
         for (PbnFile pbn : pbns) {
             if (pbn.getFinalResults()) {
                 TableFactory fac = new TableFactory(pbn.getFileLines(), false);
+                JsonEvents jevents = new JsonEvents(pbn.getJson());
+
                 String t = fac.competitionType();
                 if (t.matches("team")) {
-                    ResultsTabTeam tab = new ResultsTabTeam(fac);
+                    ResultsTabTeam tab = new ResultsTabTeam(fac, jevents);
                     tabs[0] = contents.addTab(tab);
                 } else if (t.matches("individual") || t.matches("pair")) {
-                    ResultsTabNotTeam tab = new ResultsTabNotTeam(fac);
+                    ResultsTabNotTeam tab = new ResultsTabNotTeam(fac, jevents);
                     tabs[0] = contents.addTab(tab);
                 }
                 if (fac.eventDescription().length() > 0) {
@@ -60,12 +63,13 @@ public class Results extends EVerticalLayout {
         for (PbnFile pbn : pbns) {
             if (!pbn.getFinalResults()) {
                 TableFactory fac = new TableFactory(pbn.getFileLines(), false);
+                JsonEvents jevents = new JsonEvents(pbn.getJson());
                 String t = fac.competitionType();
                 if (t.matches("team")) {
-                    ResultsTabTeam tab = new ResultsTabTeam(fac);
+                    ResultsTabTeam tab = new ResultsTabTeam(fac, jevents);
                     tabs[s] = contents.addTab(tab);
                 } else if (t.matches("indi") || t.matches("pair")) {
-                    ResultsTabNotTeam tab = new ResultsTabNotTeam(fac);
+                    ResultsTabNotTeam tab = new ResultsTabNotTeam(fac, jevents);
                     tabs[s] = contents.addTab(tab);
                 }
                 if (fac.eventDescription().length() > 0) {

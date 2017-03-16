@@ -2,6 +2,7 @@ package com.bridge.resultui;
 
 import com.bridge.ui.EHorizontalLayout;
 import com.bridge.ui.EVerticalLayout;
+import com.pbn.pbnjson.JsonEvents;
 import com.vaadin.data.Item;
 
 import scala.bridge.TableFactory;
@@ -9,7 +10,8 @@ import scala.bridge.TableFactory;
 @SuppressWarnings("serial")
 public class ResultsTabTeam extends EVerticalLayout {
     private TableFactory factory;
-    private TotalScoreTable totalScoreTable = null;
+    private JsonEvents jevents;
+    private TotalScoreTable2 totalScoreTable = null;
     private ScoreTable scoreTable = null;
     // private D diagram = null;
     // private ComparisonTable comparisonTable = null;
@@ -19,15 +21,22 @@ public class ResultsTabTeam extends EVerticalLayout {
     // private EVerticalLayout vLayout2 = new EVerticalLayout();
     private String playerId; // player or pair id sel
 
-    public ResultsTabTeam(TableFactory fac) {
+    public ResultsTabTeam(TableFactory fac, JsonEvents jevents) {
         factory = fac;
+        this.jevents = jevents;
         buildTables();
-
     }
 
+    // public ResultsTabTeam(JsonEvents jevents) {
+    // if (jevents != null && jevents.totalScoreTableExists()) {
+    // this.jevents = jevents;
+    // totalScoreTable = new TotalScoreTable2(jevents);
+    // }
+    // }
+
     protected void buildTables() {
-        if (factory.totalScoreSupported()) {
-            totalScoreTable = new TotalScoreTable(factory);
+        if (jevents.totalScoreTableExists()) {
+            totalScoreTable = new TotalScoreTable2(jevents);
             totalScoreTable.setPageLength(0);
             vLayout.addComponent(totalScoreTable);
 
@@ -40,6 +49,20 @@ public class ResultsTabTeam extends EVerticalLayout {
 
             addComponent(vLayout);
         }
+        // if (factory.totalScoreSupported()) {
+        // totalScoreTable = new TotalScoreTable(factory);
+        // totalScoreTable.setPageLength(0);
+        // vLayout.addComponent(totalScoreTable);
+        //
+        // if (factory.scoreTableSupported()) {
+        // scoreTable = new ScoreTable(factory);
+        // hLayout.addComponent(scoreTable);
+        // vLayout.addComponent(hLayout);
+        // }
+        // buildClickConnections();
+        //
+        // addComponent(vLayout);
+        // }
 
     }
 

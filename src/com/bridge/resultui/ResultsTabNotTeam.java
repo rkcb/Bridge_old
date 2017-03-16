@@ -2,6 +2,7 @@ package com.bridge.resultui;
 
 import com.bridge.ui.EHorizontalLayout;
 import com.bridge.ui.EVerticalLayout;
+import com.pbn.pbnjson.JsonEvents;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Alignment;
 
@@ -15,7 +16,8 @@ import scala.bridge.TableFactory;
 public class ResultsTabNotTeam extends EVerticalLayout {
 
     private TableFactory factory;
-    private TotalScoreTable totalScoreTable = null;
+    private JsonEvents jevents;
+    private TotalScoreTable2 totalScoreTable = null;
     private ScoreTable scoreTable = null;
     private D diagram = null;
     private ComparisonTable comparisonTable = null;
@@ -25,15 +27,17 @@ public class ResultsTabNotTeam extends EVerticalLayout {
     private EVerticalLayout vLayout2 = new EVerticalLayout();
     private String playerId; // player or pair id selected in totalscoretable
 
-    public ResultsTabNotTeam(TableFactory fac) {
+    public ResultsTabNotTeam(TableFactory fac, JsonEvents jevents) {
         factory = fac;
+        this.jevents = jevents;
         buildTables();
     }
 
     protected void buildTables() {
 
         if (factory.totalScoreSupported()) {
-            totalScoreTable = new TotalScoreTable(factory);
+            // totalScoreTable = new TotalScoreTable(factory);
+            totalScoreTable = new TotalScoreTable2(jevents);
             totalScoreTable.setPageLength(0);
             vLayout.addComponent(totalScoreTable);
 
@@ -79,9 +83,11 @@ public class ResultsTabNotTeam extends EVerticalLayout {
             totalScoreTable.addItemClickListener(event -> {
                 Integer id = (Integer) event.getItemId();
                 Item item = totalScoreTable.getItem(id);
-                Float f = (Float) item.getItemProperty(factory.idField())
+                // Float f = (Float) item.getItemProperty(factory.idField())
+                // .getValue();
+                // playerId = String.valueOf(f.intValue());
+                playerId = (String) item.getItemProperty(factory.idField())
                         .getValue();
-                playerId = String.valueOf(f.intValue());
                 scoreTable.removeAllItems();
                 scoreTable.score(playerId);
             });
