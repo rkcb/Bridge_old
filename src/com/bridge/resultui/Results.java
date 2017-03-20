@@ -44,7 +44,7 @@ public class Results extends EVerticalLayout {
 
                 String t = fac.competitionType();
                 if (t.matches("team")) {
-                    ResultsTabTeam tab = new ResultsTabTeam(fac, jevents);
+                    ResultsTabTeam tab = new ResultsTabTeam(jevents);
                     tabs[0] = contents.addTab(tab);
                 } else if (t.matches("individual") || t.matches("pair")) {
                     ResultsTabNotTeam tab = new ResultsTabNotTeam(fac, jevents);
@@ -66,7 +66,7 @@ public class Results extends EVerticalLayout {
                 JsonEvents jevents = new JsonEvents(pbn.getJson());
                 String t = fac.competitionType();
                 if (t.matches("team")) {
-                    ResultsTabTeam tab = new ResultsTabTeam(fac, jevents);
+                    ResultsTabTeam tab = new ResultsTabTeam(jevents);
                     tabs[s] = contents.addTab(tab);
                 } else if (t.matches("indi") || t.matches("pair")) {
                     ResultsTabNotTeam tab = new ResultsTabNotTeam(fac, jevents);

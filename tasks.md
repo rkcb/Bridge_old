@@ -12,5 +12,4 @@
 - OptimumScoreTable
 - Results
 
-# BY 16.00 DONE :))   
 

@@ -41,7 +41,6 @@ public class D extends Panel {
         //
         // VulZones z = new VulZones("NS");
         // addComponent(z);
-
     }
 
     public void update(String board) {
