@@ -26,13 +26,6 @@ public class ResultsTabTeam extends EVerticalLayout {
         buildTables();
     }
 
-    // public ResultsTabTeam(JsonEvents jevents) {
-    // if (jevents != null && jevents.totalScoreTableExists()) {
-    // this.jevents = jevents;
-    // totalScoreTable = new TotalScoreTable2(jevents);
-    // }
-    // }
-
     protected void buildTables() {
         if (jevents.totalScoreTableExists()) {
             totalScoreTable = new TotalScoreTable2(jevents);
@@ -48,21 +41,6 @@ public class ResultsTabTeam extends EVerticalLayout {
 
             addComponent(vLayout);
         }
-        // if (factory.totalScoreSupported()) {
-        // totalScoreTable = new TotalScoreTable(factory);
-        // totalScoreTable.setPageLength(0);
-        // vLayout.addComponent(totalScoreTable);
-        //
-        // if (factory.scoreTableSupported()) {
-        // scoreTable = new ScoreTable(factory);
-        // hLayout.addComponent(scoreTable);
-        // vLayout.addComponent(hLayout);
-        // }
-        // buildClickConnections();
-        //
-        // addComponent(vLayout);
-        // }
-
     }
 
     private void buildClickConnections() {
@@ -77,7 +55,6 @@ public class ResultsTabTeam extends EVerticalLayout {
                 scoreTable.removeAllItems();
                 scoreTable.score(playerId);
             });
-            // scoreTable.setColumnWidth("TeamId_Away", 300);
         }
 
     }

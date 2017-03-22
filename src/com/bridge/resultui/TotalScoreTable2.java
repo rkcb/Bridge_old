@@ -43,8 +43,8 @@ public class TotalScoreTable2 extends ETable {
     }
 
     private void addContainerProperties() {
-        List<String> header = jevents.totalScoreTable().dataHeader();
-        for (String element : header) {
+        List<Object> header = jevents.totalScoreTable().dataHeader();
+        for (Object element : header) {
             if (numbers.contains(element)) {
                 container.addContainerProperty(element, Double.class, null);
             } else {
@@ -55,13 +55,13 @@ public class TotalScoreTable2 extends ETable {
 
     private void loadResults() {
         List<List<Object>> dataRows = jevents.totalScoreTable().dataRows();
-        List<String> header = jevents.totalScoreTable().dataHeader();
+        List<Object> header = jevents.totalScoreTable().dataHeader();
         int i = 0;
         for (List<Object> row : dataRows) {
             Object itemId = container.addItemAt(i);
             Item item = container.getItem(itemId);
             ListIterator<Object> datai = row.listIterator();
-            for (String column : header) {
+            for (Object column : header) {
                 Object data = datai.next();
                 @SuppressWarnings("unchecked")
                 Property<Object> p = item.getItemProperty(column);

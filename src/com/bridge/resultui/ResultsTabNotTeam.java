@@ -9,7 +9,7 @@ import com.vaadin.ui.Alignment;
 import scala.bridge.TableFactory;
 
 /***
- * ResultsTabNotTeam creates a TabSheet tab contents for a one pbn file
+ * ResultsTabNotTeam creates a TabSheet tab contents for a one pbn file;
  */
 
 @SuppressWarnings("serial")
@@ -18,7 +18,7 @@ public class ResultsTabNotTeam extends EVerticalLayout {
     private TableFactory factory;
     private JsonEvents jevents;
     private TotalScoreTable2 totalScoreTable = null;
-    private ScoreTable scoreTable = null;
+    private ScoreTable2 scoreTable = null;
     private D diagram = null;
     private ComparisonTable comparisonTable = null;
     private EHorizontalLayout hLayout = new EHorizontalLayout();
@@ -35,19 +35,26 @@ public class ResultsTabNotTeam extends EVerticalLayout {
 
     protected void buildTables() {
 
-        if (factory.totalScoreSupported()) {
+        if (jevents.totalScoreTableExists()) {
+            // totalScoreTable = new TotalScoreTable(factory);
+            totalScoreTable = new TotalScoreTable2(jevents);
+            totalScoreTable.setPageLength(0);
+            vLayout.addComponent(totalScoreTable);
+        }
+
+        if (jevents.totalScoreTableExists()) {
             // totalScoreTable = new TotalScoreTable(factory);
             totalScoreTable = new TotalScoreTable2(jevents);
             totalScoreTable.setPageLength(0);
             vLayout.addComponent(totalScoreTable);
 
-            if (factory.scoreTableSupported()) {
-                scoreTable = new ScoreTable(factory);
+            if (jevents.scoreTableExists()) {
+                scoreTable = new ScoreTable2(jevents);
                 hLayout.addComponent(scoreTable);
                 vLayout.addComponent(hLayout);
             }
 
-            if (factory.dealSupported()) {
+            if (jevents.dealsExists()) {
                 diagram = new D(factory);
                 vLayout2.addComponent(diagram);
             }
