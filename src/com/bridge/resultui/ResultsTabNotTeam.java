@@ -20,7 +20,7 @@ public class ResultsTabNotTeam extends EVerticalLayout {
     private TotalScoreTable2 totalScoreTable = null;
     private ScoreTable2 scoreTable = null;
     private D diagram = null;
-    private ComparisonTable comparisonTable = null;
+    private ComparisonTable2 comparisonTable = null;
     private EHorizontalLayout hLayout = new EHorizontalLayout();
     // private String idField;
     private EVerticalLayout vLayout = new EVerticalLayout();
@@ -36,14 +36,6 @@ public class ResultsTabNotTeam extends EVerticalLayout {
     protected void buildTables() {
 
         if (jevents.totalScoreTableExists()) {
-            // totalScoreTable = new TotalScoreTable(factory);
-            totalScoreTable = new TotalScoreTable2(jevents);
-            totalScoreTable.setPageLength(0);
-            vLayout.addComponent(totalScoreTable);
-        }
-
-        if (jevents.totalScoreTableExists()) {
-            // totalScoreTable = new TotalScoreTable(factory);
             totalScoreTable = new TotalScoreTable2(jevents);
             totalScoreTable.setPageLength(0);
             vLayout.addComponent(totalScoreTable);
@@ -59,8 +51,9 @@ public class ResultsTabNotTeam extends EVerticalLayout {
                 vLayout2.addComponent(diagram);
             }
 
-            if (factory.comparisonTableSupported()) {
-                comparisonTable = new ComparisonTable(factory);
+            if (jevents.comparisonTableExists()) {
+                // comparisonTable = new ComparisonTable(factory);
+                comparisonTable = new ComparisonTable2(jevents);
                 vLayout2.addComponent(comparisonTable);
                 hLayout.addComponent(vLayout2);
                 if (factory.dealSupported()) {
@@ -105,7 +98,7 @@ public class ResultsTabNotTeam extends EVerticalLayout {
                 Object id = event.getItemId();
                 Item item = scoreTable.getItem(id);
 
-                Float f = (Float) item.getItemProperty("Board").getValue();
+                Integer f = (Integer) item.getItemProperty("Board").getValue();
                 String dealId = Integer.toString(f.intValue());
 
                 if (factory.dealSupported()) {

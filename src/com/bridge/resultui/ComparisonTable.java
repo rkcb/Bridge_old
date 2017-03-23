@@ -94,7 +94,6 @@ public class ComparisonTable extends Table {
                         p.setValue(fl);
                     } catch (NumberFormatException e) {
                     }
-
                 } else if (html.contains(header[j])) {
                     p.setValue(new SuitString(s));
                 } else {

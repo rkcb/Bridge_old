@@ -159,6 +159,9 @@ public class ScoreTable2 extends ETable {
         numbers = jevents.get(0).getScoreTable().numberColumns();
         htmls = jevents.get(0).getScoreTable().htmlColumns();
 
+        // JsonScoreTable header does not contain "Board"
+        container.addContainerProperty("Board", Integer.class, null);
+
         for (String element : header) {
             if (numbers.contains(element)) { // Double
                 container.addContainerProperty(element, Double.class, null);
@@ -174,6 +177,7 @@ public class ScoreTable2 extends ETable {
      * score loads data for the playing unit (= indi, pair, team) with id
      */
 
+    @SuppressWarnings("unchecked")
     public void score(String id) {
         List<String> header = jevents.scoreHeader();
         List<List<Object>> data = jevents.scoreData(id);
@@ -182,10 +186,11 @@ public class ScoreTable2 extends ETable {
         for (List<Object> row : data) {
             Object itemId = container.addItemAt(i);
             Item item = getItem(itemId);
+            item.getItemProperty("Board")
+                    .setValue(Integer.parseInt(jevents.get(i).getBoard()));
             Iterator<Object> rowi = row.iterator();
             for (String column : header) {
                 Object cell = rowi.next();
-                @SuppressWarnings("unchecked")
                 Property<Object> p = item.getItemProperty(column);
                 if (htmls.contains(column)) {
                     p.setValue(new HtmlLabel(cell));
@@ -195,6 +200,5 @@ public class ScoreTable2 extends ETable {
             }
             i++;
         }
-
     }
 }

@@ -56,7 +56,6 @@ public class JsonScoreTable extends JsonTable {
                     "Percentage_NS", "Percentage_EW", "Percentage_North",
                     "Percentage_East", "Percentage_South", "Percentage_West",
                     "Multiplicity");
-
         }
         if (htmlColumns == null) {
             htmlColumns = new HashSet<>(2);
