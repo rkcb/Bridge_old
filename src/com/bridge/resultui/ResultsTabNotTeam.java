@@ -6,8 +6,6 @@ import com.pbn.pbnjson.JsonEvents;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Alignment;
 
-import scala.bridge.TableFactory;
-
 /***
  * ResultsTabNotTeam creates a TabSheet tab contents for a one pbn file;
  */
@@ -15,11 +13,11 @@ import scala.bridge.TableFactory;
 @SuppressWarnings("serial")
 public class ResultsTabNotTeam extends EVerticalLayout {
 
-    private TableFactory factory;
+    // private TableFactory factory;
     private JsonEvents jevents;
     private TotalScoreTable2 totalScoreTable = null;
     private ScoreTable2 scoreTable = null;
-    private D diagram = null;
+    private D2 diagram = null;
     private ComparisonTable2 comparisonTable = null;
     private EHorizontalLayout hLayout = new EHorizontalLayout();
     // private String idField;
@@ -27,8 +25,7 @@ public class ResultsTabNotTeam extends EVerticalLayout {
     private EVerticalLayout vLayout2 = new EVerticalLayout();
     private String playerId; // player or pair id selected in totalscoretable
 
-    public ResultsTabNotTeam(TableFactory fac, JsonEvents jevents) {
-        factory = fac;
+    public ResultsTabNotTeam(JsonEvents jevents) {
         this.jevents = jevents;
         buildTables();
     }
@@ -47,7 +44,7 @@ public class ResultsTabNotTeam extends EVerticalLayout {
             }
 
             if (jevents.dealsExists()) {
-                diagram = new D(factory);
+                diagram = new D2(jevents);
                 vLayout2.addComponent(diagram);
             }
 
@@ -56,9 +53,9 @@ public class ResultsTabNotTeam extends EVerticalLayout {
                 comparisonTable = new ComparisonTable2(jevents);
                 vLayout2.addComponent(comparisonTable);
                 hLayout.addComponent(vLayout2);
-                if (factory.dealSupported()) {
+                if (jevents.dealsExists()) {
                     vLayout2.setComponentAlignment(diagram,
-                            Alignment.MIDDLE_CENTER);
+                            Alignment.MIDDLE_LEFT);
                 }
             }
 
@@ -74,9 +71,8 @@ public class ResultsTabNotTeam extends EVerticalLayout {
         // for the clicked for the line
 
         // case for pairs and individuals only
-        if (factory.totalScoreSupported() && factory.scoreTableSupported()
-                && (factory.competitionType() == "individual"
-                        || factory.competitionType() == "pair")) {
+        if (jevents.totalScoreTableExists() && jevents.scoreTableExists()
+                && jevents.competion().matches("Individuals|Pairs")) {
             // enable that clicking a line shows the results for this player or
             // pair
             // Important: currently this feature is not supported for team games
@@ -86,7 +82,7 @@ public class ResultsTabNotTeam extends EVerticalLayout {
                 // Float f = (Float) item.getItemProperty(factory.idField())
                 // .getValue();
                 // playerId = String.valueOf(f.intValue());
-                playerId = (String) item.getItemProperty(factory.idField())
+                playerId = (String) item.getItemProperty(jevents.idField())
                         .getValue();
                 scoreTable.removeAllItems();
                 scoreTable.score(playerId);
@@ -101,13 +97,13 @@ public class ResultsTabNotTeam extends EVerticalLayout {
                 Integer f = (Integer) item.getItemProperty("Board").getValue();
                 String dealId = Integer.toString(f.intValue());
 
-                if (factory.dealSupported()) {
+                if (jevents.dealsExists()) {
                     diagram.update(dealId);
                 }
 
                 comparisonTable.setData(dealId, playerId);
             });
         }
-
     }
+
 }

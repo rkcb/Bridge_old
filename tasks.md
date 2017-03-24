@@ -1,15 +1,20 @@
 
 # Scala removal 
 
-- UploadView
-- TotalScoreTable
-- ScoreTable
+- done> UploadView
+- done> TotalScoreTable
+- done > ScoreTable
 - ResultsTabTeam
 - ResultsTabNotTeam
-- ComparisonTable
-- D
+- done> ComparisonTable
+- soon done> D
 - DealDiagram
 - OptimumScoreTable
 - Results
 
+
+# D2 
+
+- point count 
+- 
 

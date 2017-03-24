@@ -47,7 +47,7 @@ public class Results extends EVerticalLayout {
                     ResultsTabTeam tab = new ResultsTabTeam(jevents);
                     tabs[0] = contents.addTab(tab);
                 } else if (t.matches("individual") || t.matches("pair")) {
-                    ResultsTabNotTeam tab = new ResultsTabNotTeam(fac, jevents);
+                    ResultsTabNotTeam tab = new ResultsTabNotTeam(jevents);
                     tabs[0] = contents.addTab(tab);
                 }
                 if (fac.eventDescription().length() > 0) {
@@ -69,7 +69,7 @@ public class Results extends EVerticalLayout {
                     ResultsTabTeam tab = new ResultsTabTeam(jevents);
                     tabs[s] = contents.addTab(tab);
                 } else if (t.matches("indi") || t.matches("pair")) {
-                    ResultsTabNotTeam tab = new ResultsTabNotTeam(fac, jevents);
+                    ResultsTabNotTeam tab = new ResultsTabNotTeam(jevents);
                     tabs[s] = contents.addTab(tab);
                 }
                 if (fac.eventDescription().length() > 0) {

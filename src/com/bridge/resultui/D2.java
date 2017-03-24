@@ -1,68 +1,57 @@
 package com.bridge.resultui;
 
+import java.util.List;
+
+import com.pbn.pbnjson.JsonEvent;
+import com.pbn.pbnjson.JsonEvents;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Panel;
 
 import scala.bridge.PbnEvent;
-import scala.bridge.TableFactory;
 
 @SuppressWarnings("serial")
-public class D extends Panel {
+public class D2 extends Panel {
 
     protected GridLayout grid = new GridLayout(3, 3);
-    protected TableFactory factory;
+    protected JsonEvents jevents;
     protected Hand[] hands = new Hand[4];
     protected DealNumber dealNumber;
     protected DealPoints points;
     protected VulZones zones;
 
-    public D(TableFactory f) {
-        // factory = f;
-        // a
-        // String pbn = "";
-        //
-        // String[] hs = pbn.split(" ");
-        // for (int i = 0; i<4; i++) {
-        // String[] suits = hs[i].split("\\.");
-        // hands[i] = new H(suits);
-        // }
-        // // hands
-        // addComponent(hands[0], 1, 0);
-        // addComponent(hands[1], 2, 1);
-        // addComponent(hands[2], 1, 2);
-        // addComponent(hands[3], 0, 1);
-        // setComponentAlignment(hands[3], Alignment.MIDDLE_RIGHT);
-        // // deal number
-        // addComponent(new DealNumber("44"), 1,1);
-        // String[] points = {"10", "2", "17", "11"};
-        // DealPoints dp = new DealPoints(points);
-        // addComponent(dp, 0, 2);
-        //
-        // VulZones z = new VulZones("NS");
-        // addComponent(z);
+    public D2(JsonEvents jevents) {
+        this.jevents = jevents;
     }
 
     public void update(String board) {
 
         grid.removeAllComponents();
-        PbnEvent e = factory.eventByBoard(board);
+        // PbnEvent e = factory.eventByBoard(board);
+        JsonEvent jevent = jevents.event(board);
 
-        addHands(e);
+        addHands(jevent);
         setContent(grid);
         grid.setMargin(true);
         grid.setSizeFull();
         setSizeUndefined();
-        addPoints(e);
-        addZones(e);
+        // addPoints(e);
+        // addZones(e);
         addDealNumber(board);
     }
 
-    protected void addHands(PbnEvent e) {
+    protected void addHands(JsonEvent event) {
 
-        for (int i = 0; i < 4; i++) {
-            // hands[i] = new Hand(e.deal()[i]);
+        int i = 0;
+        for (List<String> suits : event.getDeal()) {
+            hands[i] = new Hand(suits);
+            i++;
         }
+        //
+        // for (int i = 0; i < 4; i++) {
+        // hands[i] = new Hand(e.deal()[i]);
+        // }
+
         grid.setWidth("280px");
         grid.setHeight("280px");
         grid.addComponent(hands[0], 1, 0);
@@ -76,10 +65,10 @@ public class D extends Panel {
         // grid.setComponentAlignment(hands[3], Alignment.MIDDLE_CENTER);
     }
 
-    protected void addPoints(PbnEvent e) {
+    protected void addPoints(JsonEvent jevent) {
         String[] pts = new String[4];
         for (int i = 0; i < 4; i++) {
-            pts[i] = e.hcp(i);
+            pts[i] = jevent.hcp(i);
         }
         points = new DealPoints(pts);
         grid.addComponent(points, 0, 2);
@@ -101,5 +90,4 @@ public class D extends Panel {
     protected void addOptimum() {
 
     }
-
 }

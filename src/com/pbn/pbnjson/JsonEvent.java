@@ -133,6 +133,11 @@ public class JsonEvent {
         this.vulnerable = vulnerable;
     }
 
+    /***
+     * getDeal
+     *
+     * @return hands in the NESW order and SHDC
+     */
     public LinkedList<LinkedList<String>> getDeal() {
         return deal;
     }
@@ -252,6 +257,13 @@ public class JsonEvent {
                     .mapToDouble(i -> absDouble(i)).max().orElse(-1);
         }
         return -1;
+    }
+
+    /***
+     * hcp compute points for hand
+     */
+    public String hcp(Integer direction) {
+        return "";
     }
 
 }
