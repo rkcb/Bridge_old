@@ -172,17 +172,17 @@ public class JsonEvents {
     }
 
     public boolean mpScoring() {
-        return totalScoreTable == null ? false
+        return !totalScoreTableExists() ? false
                 : totalScoreTable.header.contains("TotalScoreMP");
     }
 
     public boolean impScoring() {
-        return totalScoreTable == null ? false
+        return !totalScoreTableExists() ? false
                 : totalScoreTable.header.contains("TotalScoreIMP");
     }
 
     public boolean vpScoring() {
-        return totalScoreTable == null ? false
+        return !totalScoreTableExists() ? false
                 : totalScoreTable.header.contains("TotalScoreVP");
     }
 
@@ -201,17 +201,21 @@ public class JsonEvents {
     }
 
     /***
-     * data find interesting scoreTable rows; for example if id belongs to EW
-     * then show opponents
+     * data find interesting scoreTable rows for indi or pair score results; for
+     * example if id belongs to EW then show opponents;
      *
      * @param id
      * @return scoreTable rows which contain the id or an empty list if not
      *         possible
      */
     public List<List<Object>> scoreData(String id) {
-        if (eventsOk()) {
-            return events.stream().map(e -> e.getScoreTable().subrow(id))
-                    .collect(Collectors.toList());
+        if (eventsOk() && !competion().isEmpty()) {
+            if (competion().matches("Individuals|Pairs")) {
+                return events.stream().map(e -> e.getScoreTable().subrow(id))
+                        .collect(Collectors.toList());
+            } else { // teams
+                return events.get(0).getScoreTable().subrows(id);
+            }
         } else {
             return new LinkedList<>();
         }
@@ -260,7 +264,7 @@ public class JsonEvents {
     }
 
     public boolean dealsExists() {
-        return eventsOk() ? events.get(0).getDeal() != null : false;
+        return eventsOk() && !events.get(0).getDeal().isEmpty();
     }
 
     public boolean comparisonTableExists() {

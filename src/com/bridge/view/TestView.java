@@ -30,6 +30,7 @@ public class TestView extends EVerticalLayout implements View {
         }
         st = new ScoreTable2(jevents);
         st.score("23");
+        st.setSelectable(true);
     }
 
     @Override

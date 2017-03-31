@@ -25,6 +25,7 @@ public class TotalScoreTable2 extends ETable {
             loadResults();
             setContainerDataSource(container);
             addStyleName("pbntable");
+            setSelectable(true);
         }
     }
 

@@ -8,8 +8,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Panel;
 
-import scala.bridge.PbnEvent;
-
 @SuppressWarnings("serial")
 public class D2 extends Panel {
 
@@ -40,10 +38,10 @@ public class D2 extends Panel {
         addDealNumber(board);
     }
 
-    protected void addHands(JsonEvent event) {
+    protected void addHands(JsonEvent jevent) {
 
         int i = 0;
-        for (List<String> suits : event.getDeal()) {
+        for (List<String> suits : jevent.getDeal()) {
             hands[i] = new Hand(suits);
             i++;
         }
@@ -75,8 +73,8 @@ public class D2 extends Panel {
         grid.setComponentAlignment(points, Alignment.MIDDLE_CENTER);
     }
 
-    protected void addZones(PbnEvent e) {
-        zones = new VulZones(e.value("Vulnerable"), e.value("Dealer"));
+    protected void addZones(JsonEvent event) {
+        zones = new VulZones(event.getVulnerable(), event.getDealer());
         grid.addComponent(zones, 0, 0);
         grid.setComponentAlignment(zones, Alignment.MIDDLE_CENTER);
     }

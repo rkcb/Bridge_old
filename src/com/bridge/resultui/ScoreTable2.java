@@ -19,11 +19,14 @@ public class ScoreTable2 extends ETable {
     private HashSet<String> numbers;
     private HashSet<String> htmls;
 
+    boolean indiOrPairs;
+    boolean teams;
+
     public ScoreTable2(JsonEvents jevents) {
         this.jevents = jevents;
-        setStyleName("pbntable"); // styles table rows
-        boolean indiOrPairs = !jevents.competion().matches("Individuals|Pairs");
-        boolean teams = jevents.competion().matches("Teams");
+        addStyleName("pbntable"); // styles table rows
+        indiOrPairs = jevents.competion().matches("Individuals|Pairs");
+        teams = jevents.competion().matches("Teams");
         if (indiOrPairs) {
             setSelectable(true);
         }
@@ -34,6 +37,7 @@ public class ScoreTable2 extends ETable {
         // cell coloring
         if (indiOrPairs) {
             if (jevents.mpScoring()) {
+                System.out.println("mp scoring");
                 addResultColoringMP(); // colored properties are disjoint
             }
             if (jevents.impScoring()) {
@@ -43,6 +47,8 @@ public class ScoreTable2 extends ETable {
             if (jevents.vpScoring()) {
                 addResultColoringVP();
             }
+        } else {
+            System.out.println("no color");
         }
     }
 
@@ -60,7 +66,7 @@ public class ScoreTable2 extends ETable {
 
             if (pid instanceof String && (pid.matches(pew) || pid.matches(pns)
                     || pid.matches(indi))) {
-                Float f = (Float) container.getItem(itemId)
+                Double f = (Double) container.getItem(itemId)
                         .getItemProperty(propertyId).getValue();
                 if (f == null) {
                     return "white";
@@ -90,7 +96,7 @@ public class ScoreTable2 extends ETable {
 
             final String pid = (String) propertyId;
             if (pid != null && pid.matches(vp)) {
-                Float f = (Float) container.getItem(itemId)
+                Double f = (Double) container.getItem(itemId)
                         .getItemProperty(propertyId).getValue();
                 if (f == null) {
                     return "white";
@@ -129,17 +135,17 @@ public class ScoreTable2 extends ETable {
             final String pid = (String) propertyId;
             if (pid != null && (pid.matches(pew) || pid.matches(pns)
                     || pid.matches(indi))) {
-                Float f = (Float) container.getItem(itemId)
+                Double d = (Double) container.getItem(itemId)
                         .getItemProperty(propertyId).getValue();
-                if (f == null) {
+                if (d == null) {
                     return "white";
                 }
 
-                if (f < bottomHalf) {
+                if (d < bottomHalf) {
                     return "cellRed";
-                } else if (bottomHalf < f && f < 0) {
+                } else if (bottomHalf < d && d < 0) {
                     return "cellYellow";
-                } else if (f >= 0 && f < topHalf) {
+                } else if (d >= 0 && d < topHalf) {
                     return "cellLightgreen";
                 } else {
                     return "cellGreen";
@@ -159,8 +165,11 @@ public class ScoreTable2 extends ETable {
         numbers = jevents.get(0).getScoreTable().numberColumns();
         htmls = jevents.get(0).getScoreTable().htmlColumns();
 
-        // JsonScoreTable header does not contain "Board"
-        container.addContainerProperty("Board", Integer.class, null);
+        // JsonScoreTable header does not contain "Board" and
+        // the team results does not contain "Board" column
+        if (indiOrPairs) {
+            container.addContainerProperty("Board", Integer.class, null);
+        }
 
         for (String element : header) {
             if (numbers.contains(element)) { // Double
@@ -186,8 +195,11 @@ public class ScoreTable2 extends ETable {
         for (List<Object> row : data) {
             Object itemId = container.addItemAt(i);
             Item item = getItem(itemId);
-            item.getItemProperty("Board")
-                    .setValue(Integer.parseInt(jevents.get(i).getBoard()));
+            // only indi or pairs need the board; teams not!
+            if (indiOrPairs) {
+                item.getItemProperty("Board")
+                        .setValue(Integer.parseInt(jevents.get(i).getBoard()));
+            }
             Iterator<Object> rowi = row.iterator();
             for (String column : header) {
                 Object cell = rowi.next();

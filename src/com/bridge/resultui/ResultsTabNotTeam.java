@@ -13,7 +13,6 @@ import com.vaadin.ui.Alignment;
 @SuppressWarnings("serial")
 public class ResultsTabNotTeam extends EVerticalLayout {
 
-    // private TableFactory factory;
     private JsonEvents jevents;
     private TotalScoreTable2 totalScoreTable = null;
     private ScoreTable2 scoreTable = null;
@@ -62,7 +61,6 @@ public class ResultsTabNotTeam extends EVerticalLayout {
             buildClickConnections();
             addComponent(vLayout);
         }
-
     }
 
     private void buildClickConnections() {
@@ -94,8 +92,8 @@ public class ResultsTabNotTeam extends EVerticalLayout {
                 Object id = event.getItemId();
                 Item item = scoreTable.getItem(id);
 
-                Integer f = (Integer) item.getItemProperty("Board").getValue();
-                String dealId = Integer.toString(f.intValue());
+                Integer in = (Integer) item.getItemProperty("Board").getValue();
+                String dealId = Integer.toString(in.intValue());
 
                 if (jevents.dealsExists()) {
                     diagram.update(dealId);
