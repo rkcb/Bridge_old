@@ -1,64 +1,55 @@
 package com.bridge.resultui;
 
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
 import com.bridge.ui.ETable;
+import com.pbn.pbnjson.JsonEvents;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
-
-import scala.bridge.TableFactory;
 
 @SuppressWarnings("serial")
 public class ScoreTable extends ETable {
 
     private IndexedContainer container = new IndexedContainer();
-    private TableFactory factory;
+    private JsonEvents jevents;
 
     private HashSet<String> numbers;
-    private HashSet<String> html;
+    private HashSet<String> htmls;
 
-    public ScoreTable(TableFactory factory) {
-        super();
-        boolean teamMatch = factory.competitionType().matches("team");
-        addHtmlContainerProperties();
-        this.factory = factory;
-        setStyleName("pbntable"); // styles table rows
-        if (!teamMatch) {
+    boolean indiOrPairs;
+    boolean teams;
+
+    public ScoreTable(JsonEvents jevents) {
+        this.jevents = jevents;
+        addStyleName("pbntable"); // styles table rows
+        indiOrPairs = jevents.competion().matches("Individuals|Pairs");
+        teams = jevents.competion().matches("Teams");
+        if (indiOrPairs) {
             setSelectable(true);
         }
-        addColumnTypes();
         addContainerProperties();
         setContainerDataSource(container);
-        for (Object id : factory.scoreTableHeader()) {
-            setColumnHeader(id, factory.translateFi("score", (String) id));
-        }
-
         setPageLength(0);
 
-        if (!teamMatch) {
-            if (factory.MPScoring()) {
+        // cell coloring
+        if (indiOrPairs) {
+            if (jevents.mpScoring()) {
+                System.out.println("mp scoring");
                 addResultColoringMP(); // colored properties are disjoint
             }
-            if (factory.IMPScorning()) {
+            if (jevents.impScoring()) {
                 addResultColoringAnyIMP(); // so there is no collision
             }
-        } else if (teamMatch) {
-            if (factory.VPScoring()) {
+        } else if (teams) {
+            if (jevents.vpScoring()) {
                 addResultColoringVP();
             }
+        } else {
+            System.out.println("no color");
         }
-    }
-
-    /***
-     * lead card and contract are represented in html
-     */
-
-    private void addHtmlContainerProperties() {
-        html = new HashSet<>();
-        html.add("Lead");
-        html.add("Contract");
     }
 
     /***
@@ -75,7 +66,7 @@ public class ScoreTable extends ETable {
 
             if (pid instanceof String && (pid.matches(pew) || pid.matches(pns)
                     || pid.matches(indi))) {
-                Float f = (Float) container.getItem(itemId)
+                Double f = (Double) container.getItem(itemId)
                         .getItemProperty(propertyId).getValue();
                 if (f == null) {
                     return "white";
@@ -105,7 +96,7 @@ public class ScoreTable extends ETable {
 
             final String pid = (String) propertyId;
             if (pid != null && pid.matches(vp)) {
-                Float f = (Float) container.getItem(itemId)
+                Double f = (Double) container.getItem(itemId)
                         .getItemProperty(propertyId).getValue();
                 if (f == null) {
                     return "white";
@@ -132,7 +123,7 @@ public class ScoreTable extends ETable {
 
     private void addResultColoringAnyIMP() {
 
-        final Float avMax = factory.averageMaxImp();
+        final Double avMax = jevents.averageMaxIMP();
 
         setCellStyleGenerator((source, itemId, propertyId) -> {
             final String pew = "IMP_EW";
@@ -144,17 +135,17 @@ public class ScoreTable extends ETable {
             final String pid = (String) propertyId;
             if (pid != null && (pid.matches(pew) || pid.matches(pns)
                     || pid.matches(indi))) {
-                Float f = (Float) container.getItem(itemId)
+                Double d = (Double) container.getItem(itemId)
                         .getItemProperty(propertyId).getValue();
-                if (f == null) {
+                if (d == null) {
                     return "white";
                 }
 
-                if (f < bottomHalf) {
+                if (d < bottomHalf) {
                     return "cellRed";
-                } else if (bottomHalf < f && f < 0) {
+                } else if (bottomHalf < d && d < 0) {
                     return "cellYellow";
-                } else if (f >= 0 && f < topHalf) {
+                } else if (d >= 0 && d < topHalf) {
                     return "cellLightgreen";
                 } else {
                     return "cellGreen";
@@ -166,30 +157,25 @@ public class ScoreTable extends ETable {
     }
 
     /***
-     * addColumnTypes defines which columns are numbers and which are strings
-     * these properties enable a proper column ordering
-     */
-
-    protected void addColumnTypes() {
-        String[] numberColumns = { "Board", "IMP_NS", "IMP_EW", "MP_NS",
-                "MP_EW", "Percentage_NS", "Percentage_EW", "MP_South",
-                "Percentage_South", "Result", "VP_Home", "VP_Away", "Round" };
-        numbers = new HashSet<>(Arrays.asList(numberColumns));
-
-    }
-
-    /***
      * set column types i.e. container properties
      */
 
     void addContainerProperties() {
-        String[] header = factory.scoreTableHeader();
+        List<String> header = jevents.scoreHeader();
+        numbers = jevents.get(0).getScoreTable().numberColumns();
+        htmls = jevents.get(0).getScoreTable().htmlColumns();
+
+        // JsonScoreTable header does not contain "Board" and
+        // the team results does not contain "Board" column
+        if (indiOrPairs) {
+            container.addContainerProperty("Board", Integer.class, null);
+        }
 
         for (String element : header) {
-            if (numbers.contains(element)) { // float
-                container.addContainerProperty(element, Float.class, null);
-            } else if (html.contains(element)) { // contract or lead
-                container.addContainerProperty(element, SuitString.class, null);
+            if (numbers.contains(element)) { // Double
+                container.addContainerProperty(element, Double.class, null);
+            } else if (htmls.contains(element)) { // contract or lead
+                container.addContainerProperty(element, HtmlLabel.class, null);
             } else {
                 container.addContainerProperty(element, String.class, null);
             }
@@ -200,30 +186,31 @@ public class ScoreTable extends ETable {
      * score loads data for the playing unit (= indi, pair, team) with id
      */
 
+    @SuppressWarnings("unchecked")
     public void score(String id) {
-        String[] header = factory.scoreTableHeader();
-        Object[][] scores = factory.scoreData(id);
-        for (int i = 0; i < scores.length; i++) {
+        List<String> header = jevents.scoreHeader();
+        List<List<Object>> data = jevents.scoreData(id);
+
+        int i = 0;
+        for (List<Object> row : data) {
             Object itemId = container.addItemAt(i);
             Item item = getItem(itemId);
-            for (int j = 0; j < header.length; j++) {
-                @SuppressWarnings("unchecked")
-                Property<Object> p = item.getItemProperty(header[j]);
-                String s = (String) scores[i][j];
-                if (numbers.contains(header[j])) {
-                    float fl = 0;
-                    try {
-                        fl = Float.parseFloat(s);
-                        p.setValue(fl);
-                    } catch (NumberFormatException e) {
-                    }
-
-                } else if (html.contains(header[j])) {
-                    p.setValue(new SuitString(s));
+            // only indi or pairs need the board; teams not!
+            if (indiOrPairs) {
+                item.getItemProperty("Board")
+                        .setValue(Integer.parseInt(jevents.get(i).getBoard()));
+            }
+            Iterator<Object> rowi = row.iterator();
+            for (String column : header) {
+                Object cell = rowi.next();
+                Property<Object> p = item.getItemProperty(column);
+                if (htmls.contains(column)) {
+                    p.setValue(new HtmlLabel(cell));
                 } else {
-                    p.setValue(s);
+                    p.setValue(cell);
                 }
             }
+            i++;
         }
     }
 }

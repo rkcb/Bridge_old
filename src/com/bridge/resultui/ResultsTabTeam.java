@@ -10,7 +10,7 @@ public class ResultsTabTeam extends EVerticalLayout {
     // private TableFactory factory;
     private JsonEvents jevents;
     private TotalScoreTable2 totalScoreTable = null;
-    private ScoreTable2 scoreTable = null;
+    private ScoreTable scoreTable = null;
     // private D diagram = null;
     // private ComparisonTable comparisonTable = null;
     private EHorizontalLayout hLayout = new EHorizontalLayout();
@@ -31,7 +31,7 @@ public class ResultsTabTeam extends EVerticalLayout {
             vLayout.addComponent(totalScoreTable);
 
             if (jevents.scoreTableExists()) {
-                scoreTable = new ScoreTable2(jevents);
+                scoreTable = new ScoreTable(jevents);
                 hLayout.addComponent(scoreTable);
                 vLayout.addComponent(hLayout);
             }

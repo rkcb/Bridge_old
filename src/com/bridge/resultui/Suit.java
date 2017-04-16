@@ -12,7 +12,7 @@ public class Suit extends Label {
             "&clubs;" };
 
     public Suit(int sym, String suit) {
-        // setStyleName(ValoTheme.PANEL_BORDERLESs);
+        // setStyleName(ValoTheme.PANEL_BORDERLESS);
         setContentMode(ContentMode.HTML);
         setStyleName("suit");
         setWidth("150px");

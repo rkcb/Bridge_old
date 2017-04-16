@@ -31,18 +31,18 @@ public class Results extends EVerticalLayout {
     /***
      * createTabs creates a tab for each pbn file
      */
-
+ 
     protected void createTabs() {
-        C<Tournament> ts = new C<>(Tournament.class);
-        List<PbnFile> pbns = ts.get(tourId).getPbnFiles();
+        C<Tournament> tournaments = new C<>(Tournament.class);
+        List<PbnFile> pbns = tournaments.get(tourId).getPbnFiles();
         tabs = new Tab[pbns.size()];
 
         for (PbnFile pbn : pbns) {
             if (pbn.getFinalResults()) {
-                TableFactory fac = new TableFactory(pbn.getFileLines(), false);
+                TableFactory factory = new TableFactory(pbn.getFileLines(), false);
                 JsonEvents jevents = new JsonEvents(pbn.getJson());
 
-                String t = fac.competitionType();
+                String t = factory.competitionType();
                 if (t.matches("team")) {
                     ResultsTabTeam tab = new ResultsTabTeam(jevents);
                     tabs[0] = contents.addTab(tab);
@@ -50,8 +50,8 @@ public class Results extends EVerticalLayout {
                     ResultsTabNotTeam tab = new ResultsTabNotTeam(jevents);
                     tabs[0] = contents.addTab(tab);
                 }
-                if (fac.eventDescription().length() > 0) {
-                    tabs[0].setCaption(fac.eventDescription());
+                if (factory.eventDescription().length() > 0) {
+                    tabs[0].setCaption(factory.eventDescription());
                 } else {
                     tabs[0].setCaption("Main Results");
                 }

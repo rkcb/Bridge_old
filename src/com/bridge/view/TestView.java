@@ -1,6 +1,6 @@
 package com.bridge.view;
 
-import com.bridge.resultui.ScoreTable2;
+import com.bridge.resultui.ScoreTable;
 import com.bridge.resultui.TotalScoreTable2;
 import com.bridge.ui.BridgeUI;
 import com.bridge.ui.EVerticalLayout;
@@ -15,7 +15,7 @@ public class TestView extends EVerticalLayout implements View {
     public static final String name = "/test";
     private MainMenu mainMenu;
     private TotalScoreTable2 tst;
-    private ScoreTable2 st;
+    private ScoreTable st;
     // private TableGrid tst = new TableGrid()
 
     public TestView(MainMenu mainMenu) {
@@ -28,7 +28,7 @@ public class TestView extends EVerticalLayout implements View {
         } else {
             BridgeUI.o("Number columns NOT empty");
         }
-        st = new ScoreTable2(jevents);
+        st = new ScoreTable(jevents);
         st.score("23");
         st.setSelectable(true);
     }
