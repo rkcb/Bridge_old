@@ -1,4 +1,4 @@
 
-# All Scala using classes DONE :)))
+# All Scala using classes DONE :))) Hurray!
 
 
